@@ -16,6 +16,7 @@ class Factoring extends Component {
                 <li><Link to="/GameSelection">2</Link></li>
                 <li><Link to="/GameSelection">3</Link></li>
                 <li><Link to="/GameSelection">4</Link></li>
+                <li><Link to="/GameSelection">5</Link></li>
             </div>
         );
     }
