@@ -16,5 +16,5 @@ export default class extends Phaser.State {
 }
 
 function actionOnClick () {
-  this.state.start('Game_Factoring')
+  this.state.start('GameSelect')
 }
