@@ -21,7 +21,6 @@ export default class extends Phaser.State {
 
         this.add.button(this.world.centerX - 350, 30, 'Arrow', actionGoBack, this)
 
-        for (var i = 0; i < 10; i++) {
             // Spawn Banana
             var Banana = this.add.sprite(this.rnd.integerInRange(0, 400), 0, 'Banana')
 
@@ -32,9 +31,9 @@ export default class extends Phaser.State {
             Banana.checkWorldBounds = true;
             Banana.events.onOutOfBounds.add(banana_out, this)
 
-            var text = this.add.text(0,0,"Some text", {font: "16px Arial", fill: "#ffffff"})
+            var text = this.add.text(0,0,"Some text", {font: "16px Arial", fill: "000000"})
             Banana.addChild(text);
-        }
+
 
         // Move monkey to right
         this.key_D = this.input.keyboard.addKey(Phaser.Keyboard.D)
@@ -60,6 +59,6 @@ export default class extends Phaser.State {
   }
 
   function banana_out(Banana){
-    Banana.reset(Banana.x, 0)
+    Banana.reset(this.rnd.integerInRange(0,game.width), 0)
   }
 
