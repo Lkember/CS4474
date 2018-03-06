@@ -21,12 +21,18 @@ export default class extends Phaser.State {
 
     
     create() {
+
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
         var Background = this.add.image(0, 0, 'Jungle')
 
         //Reference Monkey sprite as image of game and bring into the scene
-        this.image = this.add.image(0, this.world.centerY +(this.world.centerY/3), 'Monkey')
+        // this.image = this.add.image(0, this.world.centerY +(this.world.centerY/3), 'Monkey')
+        var Monkey = this.game.add.sprite(0,this.world.centerY+(this.world.centerY/3), 'Monkey');
+        this.physics.enable(Monkey, Phaser.Physics.ARCADE)
+        // Monkey.checkWorldBounds = true
+
+        // Monkey.body.x = 100;
 
         //Apply ARCADE physics for all game components in this state
         this.physics.startSystem(Phaser.Physics.ARCADE)
@@ -56,10 +62,12 @@ export default class extends Phaser.State {
 
         //----------------------------------------------PLAYER CONTROLS------------------------------------------
         //Map D key to move monkey to the right
-        this.key_D = this.input.keyboard.addKey(Phaser.Keyboard.D)
+         this.key_Right = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
+         // Monkey.key_D = this.input.keyboard.addKey(Phaser.Keyboard.D)
 
-        //Map A key to move monkey to the left
-        this.key_A = this.input.keyboard.addKey(Phaser.Keyboard.A)
+        // //Map A key to move monkey to the left
+         this.key_Left = this.input.keyboard.addKey(Phaser.Keyboard.LEFT)
+         // Monkey.key_A = this.input.keyboard.addKey(Phaser.keyboard.A)
 
         //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
         var w = this.world.width, h = this.world.height;
@@ -123,15 +131,32 @@ export default class extends Phaser.State {
     }
 
     //Update function to update monkey's movement between frames
-    update(delta) {
+    update() {
+
+        /*
+        *         this.key_Right = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
+         // Monkey.key_D = this.input.keyboard.addKey(Phaser.Keyboard.D)
+
+        // //Map A key to move monkey to the left
+         this.key_Left = this.input.keyboard.addKey(Phaser.Keyboard.LEFT)
+         // Monkey.key_A = this.input.keyboard.addKey(Phaser.keyboard.A)
+        */
         //Left movement
-        if (this.key_A.isDown) {
-            this.image.x -= 15
+        if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
+            console.log('left')
+            Monkey.body.x -= 15
         }
-        //Right movement
-        if (this.key_D.isDown) {
-            this.image.x += 15
+        if (this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
+            console.log('right')
+            Monkey.body.x +=15
         }
+        // if (Monkey.key_A.isDown) {
+        //     Monkey.body.x -= 15
+        // }
+        // //Right movement
+        // if (Monkey.key_D.isDown) {
+        //     Monkey.body.x += 15
+        // }
     }
 }
 

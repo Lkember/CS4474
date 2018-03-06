@@ -4250,8 +4250,8 @@ module.exports = Math.scale || function scale(x, inLow, inHigh, outLow, outHigh)
 
 "use strict";
 /* harmony default export */ __webpack_exports__["a"] = ({
-  gameWidth: 1500,
-  gameHeight: 1000,
+  gameWidth: 1280,
+  gameHeight: 700,
   localStorageName: 'phaseres6webpack',
   webfonts: ['Bangers']
 });
@@ -4266,7 +4266,7 @@ module.exports = Math.scale || function scale(x, inLow, inHigh, outLow, outHigh)
 /***/ (function(module, exports, __webpack_require__) {
 
 __webpack_require__(/*! babel-polyfill */131);
-module.exports = __webpack_require__(/*! /home/jose/arithmetic/CS4474/src/main.js */333);
+module.exports = __webpack_require__(/*! /Users/jasonlee/CS4474/src/main.js */333);
 
 
 /***/ }),
@@ -10641,7 +10641,7 @@ class Game extends __WEBPACK_IMPORTED_MODULE_2_phaser___default.a.Game {
     const width = docElement.clientWidth > __WEBPACK_IMPORTED_MODULE_15__config__["a" /* default */].gameWidth ? __WEBPACK_IMPORTED_MODULE_15__config__["a" /* default */].gameWidth : docElement.clientWidth;
     const height = docElement.clientHeight > __WEBPACK_IMPORTED_MODULE_15__config__["a" /* default */].gameHeight ? __WEBPACK_IMPORTED_MODULE_15__config__["a" /* default */].gameHeight : docElement.clientHeight;
 
-    super(width, height, __WEBPACK_IMPORTED_MODULE_2_phaser___default.a.CANVAS, 'content', null);
+    super(__WEBPACK_IMPORTED_MODULE_15__config__["a" /* default */].gameWidth, __WEBPACK_IMPORTED_MODULE_15__config__["a" /* default */].gameHeight, __WEBPACK_IMPORTED_MODULE_2_phaser___default.a.CANVAS, 'content', null);
 
     this.state.add('Boot', __WEBPACK_IMPORTED_MODULE_3__states_Boot__["a" /* default */], false);
     this.state.add('Splash', __WEBPACK_IMPORTED_MODULE_4__states_Splash__["a" /* default */], false);
@@ -10980,12 +10980,18 @@ function actionOnClickDiv() {
     }
 
     create() {
+
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
         var Background = this.add.image(0, 0, 'Jungle');
 
         //Reference Monkey sprite as image of game and bring into the scene
-        this.image = this.add.image(0, this.world.centerY + this.world.centerY / 3, 'Monkey');
+        // this.image = this.add.image(0, this.world.centerY +(this.world.centerY/3), 'Monkey')
+        var Monkey = this.game.add.sprite(0, this.world.centerY + this.world.centerY / 3, 'Monkey');
+        this.physics.enable(Monkey, __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Physics.ARCADE);
+        // Monkey.checkWorldBounds = true
+
+        // Monkey.body.x = 100;
 
         //Apply ARCADE physics for all game components in this state
         this.physics.startSystem(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Physics.ARCADE);
@@ -11014,10 +11020,12 @@ function actionOnClickDiv() {
 
         //----------------------------------------------PLAYER CONTROLS------------------------------------------
         //Map D key to move monkey to the right
-        this.key_D = this.input.keyboard.addKey(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.D);
+        this.key_Right = this.input.keyboard.addKey(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.RIGHT);
+        // Monkey.key_D = this.input.keyboard.addKey(Phaser.Keyboard.D)
 
-        //Map A key to move monkey to the left
-        this.key_A = this.input.keyboard.addKey(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.A);
+        // //Map A key to move monkey to the left
+        this.key_Left = this.input.keyboard.addKey(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.LEFT);
+        // Monkey.key_A = this.input.keyboard.addKey(Phaser.keyboard.A)
 
         //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
         var w = this.world.width,
@@ -11082,15 +11090,31 @@ function actionOnClickDiv() {
     }
 
     //Update function to update monkey's movement between frames
-    update(delta) {
+    update() {
+
+        /*
+        *         this.key_Right = this.input.keyboard.addKey(Phaser.Keyboard.RIGHT)
+         // Monkey.key_D = this.input.keyboard.addKey(Phaser.Keyboard.D)
+         // //Map A key to move monkey to the left
+         this.key_Left = this.input.keyboard.addKey(Phaser.Keyboard.LEFT)
+         // Monkey.key_A = this.input.keyboard.addKey(Phaser.keyboard.A)
+        */
         //Left movement
-        if (this.key_A.isDown) {
-            this.image.x -= 15;
+        if (this.input.keyboard.isDown(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.LEFT)) {
+            console.log('left');
+            Monkey.body.x -= 15;
         }
-        //Right movement
-        if (this.key_D.isDown) {
-            this.image.x += 15;
+        if (this.input.keyboard.isDown(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.RIGHT)) {
+            console.log('right');
+            Monkey.body.x += 15;
         }
+        // if (Monkey.key_A.isDown) {
+        //     Monkey.body.x -= 15
+        // }
+        // //Right movement
+        // if (Monkey.key_D.isDown) {
+        //     Monkey.body.x += 15
+        // }
     }
 });
 
