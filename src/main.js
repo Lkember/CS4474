@@ -11,6 +11,9 @@ import GameStateMult from './states/Game_Multiplication'
 import GameStateDiv from './states/Game_Division'
 import MainMenuState from './states/MainMenu'
 import MusicState from './states/MusicSettings'
+import FactDifState from './states/Fact_Difficulty'
+import MultDifState from './states/Mult_Difficulty'
+import DivDifState from './states/Div_Difficulty'
 
 import config from './config'
 
@@ -31,6 +34,11 @@ class Game extends Phaser.Game {
     this.state.add('MainMenu', MainMenuState, false)
       this.state.add('GameSelect', GameSelectState, false)
       this.state.add('MusicSettings', MusicState, false)
+      this.state.add('Fact_dif',FactDifState, false)
+      this.state.add('Mult_dif', MultDifState, false)
+      this.state.add('Div_dif',DivDifState, false)
+
+
 
 
     // with Cordova with need to wait that the device is ready so we will call the Boot state in another file

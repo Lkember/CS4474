@@ -5,24 +5,24 @@ export default class extends Phaser.State {
     }
 
     preload() {
-        this.load.image('Jungle', '../../assets/images/background_jungle.png')
-        this.load.image('Monkey', '../../assets/images/Monkey_small.png')
+        this.load.image('Jungle', '../../assets/images/background_jungle.jpg')
+        this.load.image('Monkey', '../../assets/images/Monkey.png')
         this.load.image('Banana', '../../assets/images/banana_small.png')
-        this.load.image('Arrow', '../../assets/images/arrow.png')
+        this.load.image('Arrow', '../../assets/images/arrow_yellow.png')
     }
 
 
     create() {
         var Background = this.add.image(0, 0, 'Jungle')
-        this.image = this.add.image(0, 230, 'Monkey')
 
+        this.image = this.add.image(0, this.world.centerY +(this.world.centerY/3), 'Monkey')
 
         this.physics.startSystem(Phaser.Physics.ARCADE)
 
-        this.add.button(this.world.centerX - 350, 30, 'Arrow', actionGoBack, this)
+        this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
 
             // Spawn Banana
-            var Banana = this.add.sprite(this.rnd.integerInRange(0, 400), 0, 'Banana')
+            var Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana')
 
             Banana.inputEnabled = true;
             this.physics.enable(Banana, Phaser.Physics.ARCADE)
@@ -31,7 +31,12 @@ export default class extends Phaser.State {
             Banana.checkWorldBounds = true;
             Banana.events.onOutOfBounds.add(banana_out, this)
 
-            var text = this.add.text(0,0,"Some text", {font: "16px Arial", fill: "000000"})
+            var text = this.add.text(20,30,"Number",
+                {font: "16px Arial",
+                    fontWeight: "bold",
+                    fill: "#FFFFFF",
+                    boundsAlignH:"right",
+                    boundsAlignV: "bottom"})
             Banana.addChild(text);
 
 

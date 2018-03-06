@@ -10,6 +10,7 @@ export default class extends Phaser.State {
   }
 
   preload() {
+
     if (config.webfonts.length) {
       WebFont.load({
         google: {
@@ -27,7 +28,8 @@ export default class extends Phaser.State {
   }
 
   render() {
-    if (config.webfonts.length && this.fontsReady) {
+
+      if (config.webfonts.length && this.fontsReady) {
       this.state.start('Splash')
     }
     if (!config.webfonts.length) {
