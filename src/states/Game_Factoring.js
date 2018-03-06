@@ -62,7 +62,7 @@ export default class extends Phaser.State {
         this.key_A = this.input.keyboard.addKey(Phaser.Keyboard.A)
 
         //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
-        var w = 800, h = 600;
+        var w = this.world.width, h = this.world.height;
         var menu, choiseLabel;
         
         //Create a label to use as a button

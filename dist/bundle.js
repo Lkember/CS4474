@@ -11020,8 +11020,8 @@ function actionOnClickDiv() {
         this.key_A = this.input.keyboard.addKey(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.A);
 
         //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
-        var w = 800,
-            h = 600;
+        var w = this.world.width,
+            h = this.world.height;
         var menu, choiseLabel;
 
         //Create a label to use as a button
