@@ -10891,11 +10891,19 @@ const centerGameObjects = objects => {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser__ = __webpack_require__(/*! phaser */ 11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_phaser__);
+/**
+ * @file: GameSelect.js
+ * Purpose: Game state to select game type between factoring,
+ *          multiplication and division
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Language: ES6
+ */
 
 
 /* harmony default export */ __webpack_exports__["a"] = (class extends __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.State {
     init() {}
 
+    //Load scene assets to display
     preload() {
         this.load.image('Background', '../../assets/images/background_menu.png');
         this.load.image('ButtonFactor', '../../assets/images/button_factor.png');
@@ -10904,15 +10912,19 @@ const centerGameObjects = objects => {
     }
 
     create() {
+        //----------------------------------------------UI COMPONENT---------------------------------------------
+        //Display background and scale to world window
         var Background = this.add.image(0, 0, 'Background');
         Background.width = this.world.width;
         Background.height = this.world.height;
 
+        //Display instruction to select game (NEEDS STYLING**)
         var text = this.add.text(this.world.centerX * 0.70, this.world.centerY / 4, "Select A Game", { font: "60px Arial",
             fontWeight: "bold",
             fill: "#FFD700",
             boundsAlignH: "right" });
 
+        //Display game buttons representing FACTORING, MULTIPLICATION & DIVISION
         this.add.button(this.world.centerX * 0.65, this.world.centerY, 'ButtonFactor', actionOnClickFact, this);
         this.add.button(this.world.centerX * 0.65, this.world.centerY * 1.3, 'ButtonMult', actionOnClickMult, this);
         this.add.button(this.world.centerX * 0.65, this.world.centerY * 1.6, 'ButtonDiv', actionOnClickDiv, this);
@@ -10920,14 +10932,17 @@ const centerGameObjects = objects => {
 
 });
 
+//Function called on FACTOR button to proceed to difficulty selection
 function actionOnClickFact() {
     this.state.start('Fact_dif');
 }
 
+//Function called on MULTIPLICATION button to proceed to difficulty selection
 function actionOnClickMult() {
     this.state.start('Mult_dif');
 }
 
+//Function called on DIVISION button to proceed to difficulty selection
 function actionOnClickDiv() {
     this.state.start('Div_dif');
 }
@@ -10944,37 +10959,52 @@ function actionOnClickDiv() {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser__ = __webpack_require__(/*! phaser */ 11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_phaser__);
+/**
+ * @file: Game_Factoring.js
+ * Purpose: Game instance for factoring game
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Language: ES6
+ */
 
 
 /* harmony default export */ __webpack_exports__["a"] = (class extends __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.State {
     init() {}
 
+    //Load scene assets to display
     preload() {
         this.load.image('Jungle', '../../assets/images/background_jungle.jpg');
         this.load.image('Monkey', '../../assets/images/Monkey.png');
         this.load.image('Banana', '../../assets/images/banana_small.png');
         this.load.image('Arrow', '../../assets/images/arrow_yellow.png');
+        this.load.image('menu', '../../assets/images/pause-b.png');
     }
 
     create() {
+        //----------------------------------------------UI COMPONENT---------------------------------------------
+        //Display background in scene
         var Background = this.add.image(0, 0, 'Jungle');
 
+        //Reference Monkey sprite as image of game and bring into the scene
         this.image = this.add.image(0, this.world.centerY + this.world.centerY / 3, 'Monkey');
 
+        //Apply ARCADE physics for all game components in this state
         this.physics.startSystem(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Physics.ARCADE);
 
+        //Creation of arrow button to exit state and return to game selection
         this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
 
-        // Spawn Banana
+        //---------------------------------------------BANANA COMPONENTS-----------------------------------------
+        //Spawn Banana at top boundary of world at random x co-ordinate within provided range
         var Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana');
-
         Banana.inputEnabled = true;
         this.physics.enable(Banana, __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Physics.ARCADE);
-        // Set gravity
+
+        // Set gravity and make sure banana is reset once it leaves world bounds
         Banana.body.gravity.y = 50;
         Banana.checkWorldBounds = true;
         Banana.events.onOutOfBounds.add(banana_out, this);
 
+        //Add text component to display numbers on falling bananas
         var text = this.add.text(20, 30, "Number", { font: "16px Arial",
             fontWeight: "bold",
             fill: "#FFFFFF",
@@ -10982,28 +11012,94 @@ function actionOnClickDiv() {
             boundsAlignV: "bottom" });
         Banana.addChild(text);
 
-        // Move monkey to right
+        //----------------------------------------------PLAYER CONTROLS------------------------------------------
+        //Map D key to move monkey to the right
         this.key_D = this.input.keyboard.addKey(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.D);
 
-        // Move monkey to Left
+        //Map A key to move monkey to the left
         this.key_A = this.input.keyboard.addKey(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.A);
+
+        //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
+        var w = 800,
+            h = 600;
+        var menu, choiseLabel;
+
+        //Create a label to use as a button
+        var pause_label = this.add.text(this.world.centerX, this.world.centerY * 0.1, 'Pause', { font: '24px Arial',
+            fontWeight: "bold",
+            fill: '#fff'
+        });
+        pause_label.inputEnabled = true;
+
+        pause_label.events.onInputUp.add(function () {
+            //When the pause button is pressed, we pause the game
+            game.paused = true;
+            //Then add the menu
+            menu = game.add.sprite(w / 2, h / 2, 'menu');
+            menu.anchor.setTo(0.5, 0.5);
+            // And a label to illustrate which menu item was chosen. (This is not necessary)
+            choiseLabel = game.add.text(w / 2, h - 150, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+            choiseLabel.anchor.setTo(0.5, 0.5);
+        });
+
+        //Add a input listener that can help us return from being paused
+        game.input.onDown.add(unpause, self);
+
+        //And finally the method that handels the pause menu
+        function unpause(event) {
+            //Only act if paused
+            if (game.paused) {
+                //Calculate the corners of the menu
+                var x1 = w / 2 - 270 / 2,
+                    x2 = w / 2 + 270 / 2,
+                    y1 = h / 2 - 180 / 2,
+                    y2 = h / 2 + 180 / 2;
+
+                //Check if the click was inside the menu
+                if (event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2) {
+                    //The choicemap is an array that will help us see which item was clicked
+                    var choisemap = ['one', 'two', 'three', 'four', 'five', 'six'];
+
+                    //Get menu local coordinates for the click
+                    var x = event.x - x1,
+                        y = event.y - y1;
+
+                    //Calculate the choice
+                    var choise = Math.floor(x / 90) + 3 * Math.floor(y / 90);
+
+                    //Display the choice
+                    choiseLabel.text = 'You chose menu item: ' + choisemap[choise];
+                } else {
+                    //Remove the menu and the label
+                    menu.destroy();
+                    choiseLabel.destroy();
+
+                    //Unpause the game
+                    game.paused = false;
+                }
+            }
+        };
     }
 
+    //Update function to update monkey's movement between frames
     update(delta) {
+        //Left movement
         if (this.key_A.isDown) {
             this.image.x -= 15;
         }
-
+        //Right movement
         if (this.key_D.isDown) {
             this.image.x += 15;
         }
     }
 });
 
+//Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack() {
     this.state.start('GameSelect');
 }
 
+//Function to reset banana position once it leaves world boundary
 function banana_out(Banana) {
     Banana.reset(this.rnd.integerInRange(0, game.width), 0);
 }
@@ -11020,23 +11116,34 @@ function banana_out(Banana) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser__ = __webpack_require__(/*! phaser */ 11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_phaser__);
+/**
+ * @file: Game_Multiplication.js
+ * Purpose: Game instance for multiplication game
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Language: ES6
+ */
 
 
 /* harmony default export */ __webpack_exports__["a"] = (class extends __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.State {
     init() {}
 
+    //Load scene assets to display
     preload() {
         this.load.image('Ice', '../../assets/images/background_ice.jpg');
         this.load.image('Arrow', '../../assets/images/arrow_blue.png');
     }
 
     create() {
+        //----------------------------------------------UI COMPONENT---------------------------------------------
+        //Display background in scene
         this.image = this.add.image(0, 0, 'Ice');
 
+        //Creation of arrow button to exit state and return to game selection
         this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
     }
 });
 
+//Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack() {
     this.state.start('GameSelect');
 }
@@ -11053,24 +11160,35 @@ function actionGoBack() {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser__ = __webpack_require__(/*! phaser */ 11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_phaser__);
+/**
+ * @file: Game_Division.js
+ * Purpose: Game instance for division game
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Language: ES6
+ */
 
 
 /* harmony default export */ __webpack_exports__["a"] = (class extends __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.State {
     init() {}
 
+    //Load scene assets to display
     preload() {
         this.load.image('Desert', '../../assets/images/background_desert.png');
         this.load.image('Arrow', '../../assets/images/arrow_brown.png');
     }
 
     create() {
+        //----------------------------------------------UI COMPONENT------------------------------------------
+        //Display background in scene
         this.image = this.add.image(0, 0, 'Desert');
 
+        //Creation of arrow button to exit state and return to game selection
         this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
     }
 
 });
 
+//Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack() {
     this.state.start('GameSelect');
 }
@@ -11087,11 +11205,18 @@ function actionGoBack() {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser__ = __webpack_require__(/*! phaser */ 11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_phaser__);
+/**
+ * @file: MainMenu.js
+ * Purpose: Game state to display game's main menu
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Language: ES6
+ */
 
 
 /* harmony default export */ __webpack_exports__["a"] = (class extends __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.State {
   init() {}
 
+  //Load visual and audio scene assets to display
   preload() {
     this.load.audio('test', ['../../assets/fx/dk.mp3']);
     this.load.image('Background', '../../assets/images/background_menu.png');
@@ -11099,23 +11224,30 @@ function actionGoBack() {
   }
 
   create() {
+    //-------------------------------------------MENU MUSIC COMPONENT---------------------------------------
+    //Play audio file and loop
     var music = this.game.add.audio('test');
     music.play();
     music.loop = true;
 
+    //----------------------------------------------UI COMPONENT---------------------------------------------
+    //Set menu background and scale to display
     var Background = this.add.image(0, 0, 'Background');
     Background.width = this.world.width;
     Background.height = this.world.height;
 
+    //Display game title (NEEDS STYLING**)
     var text = this.add.text(this.world.centerX * 0.65, this.world.centerY / 4, "Arithmetic Monkeys", { font: "60px Arial",
       fontWeight: "bold",
       fill: "#FFD700",
       boundsAlignH: "right" });
 
+    //Display start button to enter game selection
     this.add.button(this.world.centerX - 135, this.world.centerY + this.world.centerY / 4, 'Button', actionOnClick, this);
   }
 });
 
+//Function called on START button to proceed to 'GameSelect' screen
 function actionOnClick() {
   this.state.start('GameSelect');
 }
@@ -11143,11 +11275,18 @@ function actionOnClick() {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser__ = __webpack_require__(/*! phaser */ 11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_phaser__);
+/**
+ * @file: Fact_Difficulty.js
+ * Purpose: Game state to select factoring game difficulty
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Language: ES6
+ */
 
 
 /* harmony default export */ __webpack_exports__["a"] = (class extends __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.State {
     init() {}
 
+    //Load scene assets to display
     preload() {
         this.load.image('Background', '../../assets/images/background_menu.png');
         this.load.image('Diff_1', '../../assets/images/fact_dif_1.png');
@@ -11156,15 +11295,19 @@ function actionOnClick() {
     }
 
     create() {
+        //----------------------------------------------UI COMPONENT---------------------------------------------
+        //Display background in scene and scale to world size
         var Background = this.add.image(0, 0, 'Background');
         Background.width = this.world.width;
         Background.height = this.world.height;
 
+        //Text instruction for user to select a difficulty(NEEDS STYLING*)
         var text = this.add.text(this.world.centerX * 0.65, this.world.centerY / 4, "Select A Difficulty", { font: "60px Arial",
             fontWeight: "bold",
             fill: "#FFD700",
             boundsAlignH: "right" });
 
+        //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
         this.add.button(this.world.centerX * 0.70, this.world.centerY, 'Diff_1', actionOnClickFact, this);
         this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
         this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
@@ -11172,14 +11315,17 @@ function actionOnClick() {
 
 });
 
+//Function called on button to begin FACTORING game with difficulty 1
 function actionOnClickFact() {
     this.state.start('Game_Factoring');
 }
 
+//Function called on button to begin FACTORING game with difficulty 2 (Locked)
 function actionOnClickMult() {
     console.log("Difficulty 2 Locked");
 }
 
+//Function called on button to begin FACTORING game with difficulty 3 (Locked)
 function actionOnClickDiv() {
     console.log("Difficulty 3 Locked");
 }
@@ -11196,11 +11342,18 @@ function actionOnClickDiv() {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser__ = __webpack_require__(/*! phaser */ 11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_phaser__);
+/**
+ * @file: Mult_Difficulty.js
+ * Purpose: Game state to select multiplication game difficulty
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Language: ES6
+ */
 
 
 /* harmony default export */ __webpack_exports__["a"] = (class extends __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.State {
     init() {}
 
+    //Load scene assets to display
     preload() {
         this.load.image('Background', '../../assets/images/background_menu.png');
         this.load.image('Diff_1', '../../assets/images/mult_dif_1.png');
@@ -11209,15 +11362,19 @@ function actionOnClickDiv() {
     }
 
     create() {
+        //----------------------------------------------UI COMPONENT---------------------------------------------
+        //Display background in scene and scale to world size
         var Background = this.add.image(0, 0, 'Background');
         Background.width = this.world.width;
         Background.height = this.world.height;
 
+        //Text instruction for user to select a difficulty(NEEDS STYLING*)
         var text = this.add.text(this.world.centerX * 0.65, this.world.centerY / 4, "Select A Difficulty", { font: "60px Arial",
             fontWeight: "bold",
             fill: "#FFD700",
             boundsAlignH: "right" });
 
+        //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
         this.add.button(this.world.centerX * 0.70, this.world.centerY, 'Diff_1', actionOnClickFact, this);
         this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
         this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
@@ -11225,14 +11382,17 @@ function actionOnClickDiv() {
 
 });
 
+//Function called on button to begin MULTIPLICATION game with difficulty 1
 function actionOnClickFact() {
     this.state.start('Game_Multiplication');
 }
 
+//Function called on button to begin MULTIPLICATION game with difficulty 2 (Locked)
 function actionOnClickMult() {
     console.log("Difficulty 2 Locked");
 }
 
+//Function called on button to begin MULTIPLICATION game with difficulty 3 (Locked)
 function actionOnClickDiv() {
     console.log("Difficulty 3 Locked");
 }
@@ -11249,11 +11409,18 @@ function actionOnClickDiv() {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser__ = __webpack_require__(/*! phaser */ 11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_phaser__);
+/**
+ * @file: Div_Difficulty.js
+ * Purpose: Game state to select division game difficulty
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Language: ES6
+ */
 
 
 /* harmony default export */ __webpack_exports__["a"] = (class extends __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.State {
     init() {}
 
+    //Load scene assets to display
     preload() {
         this.load.image('Background', '../../assets/images/background_menu.png');
         this.load.image('Diff_1', '../../assets/images/div_dif_1.png');
@@ -11262,15 +11429,19 @@ function actionOnClickDiv() {
     }
 
     create() {
+        //----------------------------------------------UI COMPONENT---------------------------------------------
+        //Display background in scene and scale to world size
         var Background = this.add.image(0, 0, 'Background');
         Background.width = this.world.width;
         Background.height = this.world.height;
 
+        //Text instruction for user to select a difficulty(NEEDS STYLING*)
         var text = this.add.text(this.world.centerX * 0.65, this.world.centerY / 4, "Select A Difficulty", { font: "60px Arial",
             fontWeight: "bold",
             fill: "#FFD700",
             boundsAlignH: "right" });
 
+        //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
         this.add.button(this.world.centerX * 0.70, this.world.centerY, 'Diff_1', actionOnClickFact, this);
         this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
         this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
@@ -11278,14 +11449,17 @@ function actionOnClickDiv() {
 
 });
 
+//Function called on button to begin DIVISION game with difficulty 1
 function actionOnClickFact() {
     this.state.start('Game_Division');
 }
 
+//Function called on button to begin DIVISION game with difficulty 2 (Locked)
 function actionOnClickMult() {
     console.log("Difficulty 2 Locked");
 }
 
+//Function called on button to begin DIVISION game with difficulty 3 (Locked)
 function actionOnClickDiv() {
     console.log("Difficulty 3 Locked");
 }

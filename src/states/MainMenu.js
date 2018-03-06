@@ -1,34 +1,47 @@
+/**
+ * @file: MainMenu.js
+ * Purpose: Game state to display game's main menu
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Language: ES6
+ */
 import Phaser from 'phaser'
 
 export default class extends Phaser.State {
-  init () {
-  }
+    init () {}
 
-  preload () {
+    //Load visual and audio scene assets to display
+    preload () {
       this.load.audio('test',['../../assets/fx/dk.mp3'])
-    this.load.image('Background', '../../assets/images/background_menu.png')
-    this.load.image('Button', '../../assets/images/start_button.png')
-  }
+      this.load.image('Background', '../../assets/images/background_menu.png')
+      this.load.image('Button', '../../assets/images/start_button.png')
+    }
 
-  create () {
+    create () {
+      //-------------------------------------------MENU MUSIC COMPONENT---------------------------------------
+      //Play audio file and loop
       var music = this.game.add.audio('test')
       music.play();
       music.loop = true;
 
-    var Background = this.add.image(0, 0, 'Background')
+      //----------------------------------------------UI COMPONENT---------------------------------------------
+      //Set menu background and scale to display
+      var Background = this.add.image(0, 0, 'Background')
       Background.width = this.world.width
       Background.height = this.world.height
 
+      //Display game title (NEEDS STYLING**)
       var text = this.add.text(this.world.centerX * 0.65, this.world.centerY/4,"Arithmetic Monkeys",
           {font: "60px Arial",
-              fontWeight: "bold",
-              fill: "#FFD700",
-              boundsAlignH:"right"})
+           fontWeight: "bold",
+           fill: "#FFD700",
+           boundsAlignH:"right"})
 
-    this.add.button(this.world.centerX - 135, this.world.centerY + (this.world.centerY/4), 'Button', actionOnClick, this)
-  }
+      //Display start button to enter game selection
+      this.add.button(this.world.centerX - 135, this.world.centerY + (this.world.centerY/4), 'Button', actionOnClick, this)
+    }
 }
 
+//Function called on START button to proceed to 'GameSelect' screen
 function actionOnClick () {
   this.state.start('GameSelect')
 }
