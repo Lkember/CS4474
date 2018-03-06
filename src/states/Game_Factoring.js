@@ -30,7 +30,7 @@ export default class extends Phaser.State {
         // this.image = this.add.image(0, this.world.centerY +(this.world.centerY/3), 'Monkey')
         var Monkey = this.game.add.sprite(0,this.world.centerY+(this.world.centerY/3), 'Monkey');
         this.physics.enable(Monkey, Phaser.Physics.ARCADE)
-        // Monkey.checkWorldBounds = true
+        Monkey.checkWorldBounds = true
 
         // Monkey.body.x = 100;
 

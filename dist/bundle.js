@@ -10989,7 +10989,7 @@ function actionOnClickDiv() {
         // this.image = this.add.image(0, this.world.centerY +(this.world.centerY/3), 'Monkey')
         var Monkey = this.game.add.sprite(0, this.world.centerY + this.world.centerY / 3, 'Monkey');
         this.physics.enable(Monkey, __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Physics.ARCADE);
-        // Monkey.checkWorldBounds = true
+        Monkey.checkWorldBounds = true;
 
         // Monkey.body.x = 100;
 
