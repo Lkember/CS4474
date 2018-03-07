@@ -10984,11 +10984,18 @@ function actionOnClickDiv() {
         //Display background in scene
         var Background = this.add.image(0, 0, 'Jungle');
 
-        //Reference Monkey sprite as image of game and bring into the scene
-        this.image = this.add.image(0, this.world.centerY + this.world.centerY / 3, 'Monkey');
-
         //Apply ARCADE physics for all game components in this state
         this.physics.startSystem(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Physics.ARCADE);
+
+        //Reference Monkey sprite as image of game and bring into the scene
+        this.UserMonkey = this.add.sprite(0, this.world.centerY + this.world.centerY / 3, 'Monkey');
+
+        //Enable body property and ARCADE physics on monkey sprite
+        this.UserMonkey.enableBody = true;
+        this.physics.enable(this.UserMonkey, __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Physics.ARCADE);
+
+        //Collider to keep monkey in bounds
+        this.UserMonkey.body.collideWorldBounds = true;
 
         //Creation of arrow button to exit state and return to game selection
         this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
@@ -11018,6 +11025,12 @@ function actionOnClickDiv() {
 
         //Map A key to move monkey to the left
         this.key_A = this.input.keyboard.addKey(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.A);
+
+        //Map LEFT arrow key to move monkey to the left
+        this.key_LEFT = this.input.keyboard.addKey(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.LEFT);
+
+        //Map RIGHT arrow key to move monkey to the right
+        this.key_RIGHT = this.input.keyboard.addKey(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.RIGHT);
 
         //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
         var w = this.world.width,
@@ -11085,11 +11098,17 @@ function actionOnClickDiv() {
     update(delta) {
         //Left movement
         if (this.key_A.isDown) {
-            this.image.x -= 15;
+            this.UserMonkey.x -= 15;
+        }
+        if (this.key_LEFT.isDown) {
+            this.UserMonkey.x -= 15;
         }
         //Right movement
         if (this.key_D.isDown) {
-            this.image.x += 15;
+            this.UserMonkey.x += 15;
+        }
+        if (this.key_RIGHT.isDown) {
+            this.UserMonkey.x += 15;
         }
     }
 });
