@@ -11002,14 +11002,15 @@ function actionOnClickDiv() {
 
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
         //Spawn Banana at top boundary of world at random x co-ordinate within provided range
-        var Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana');
-        Banana.inputEnabled = true;
-        this.physics.enable(Banana, __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Physics.ARCADE);
+        this.Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana');
+        this.Banana.inputEnabled = true;
+        this.physics.enable(this.Banana, __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Physics.ARCADE);
 
-        // Set gravity and make sure banana is reset once it leaves world bounds
-        Banana.body.gravity.y = 50;
-        Banana.checkWorldBounds = true;
-        Banana.events.onOutOfBounds.add(banana_out, this);
+        // Set gravity and make sure banana is reset once it leaves world bounds or is killed
+        this.Banana.body.gravity.y = 50;
+        this.Banana.checkWorldBounds = true;
+        this.Banana.events.onOutOfBounds.add(banana_out, this);
+        this.Banana.events.onKilled.add(banana_out, this); //Code Line for testing collision//
 
         //Add text component to display numbers on falling bananas
         var text = this.add.text(20, 30, "Number", { font: "16px Arial",
@@ -11017,7 +11018,7 @@ function actionOnClickDiv() {
             fill: "#FFFFFF",
             boundsAlignH: "right",
             boundsAlignV: "bottom" });
-        Banana.addChild(text);
+        this.Banana.addChild(text);
 
         //----------------------------------------------PLAYER CONTROLS------------------------------------------
         //Map D key to move monkey to the right
@@ -11110,8 +11111,16 @@ function actionOnClickDiv() {
         if (this.key_RIGHT.isDown) {
             this.UserMonkey.x += 15;
         }
+
+        //Check collision with UserMonkey and Banana
+        this.physics.arcade.collide(this.UserMonkey, this.Banana, collisionHandler, null, this);
     }
 });
+
+//If objects collide, destroy second object
+function collisionHandler(object1, object2) {
+    object2.kill();
+}
 
 //Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack() {
@@ -11120,7 +11129,7 @@ function actionGoBack() {
 
 //Function to reset banana position once it leaves world boundary
 function banana_out(Banana) {
-    Banana.reset(this.rnd.integerInRange(0, game.width), 0);
+    this.Banana.reset(this.rnd.integerInRange(0, game.width), 0);
 }
 
 /***/ }),
