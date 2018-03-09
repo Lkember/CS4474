@@ -10925,9 +10925,36 @@ const centerGameObjects = objects => {
             boundsAlignH: "right" });
 
         //Display game buttons representing FACTORING, MULTIPLICATION & DIVISION
-        this.add.button(this.world.centerX * 0.65, this.world.centerY, 'ButtonFactor', actionOnClickFact, this);
-        this.add.button(this.world.centerX * 0.65, this.world.centerY * 1.3, 'ButtonMult', actionOnClickMult, this);
-        this.add.button(this.world.centerX * 0.65, this.world.centerY * 1.6, 'ButtonDiv', actionOnClickDiv, this);
+        this.Factor_Button = this.add.button(this.world.centerX, this.world.centerY, 'ButtonFactor', actionOnClickFact, this);
+        this.Mult_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'ButtonMult', actionOnClickMult, this);
+        this.Div_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'ButtonDiv', actionOnClickDiv, this);
+
+        this.Factor_Button.anchor.setTo(0.5, 0.5);
+        this.Mult_Button.anchor.setTo(0.5, 0.5);
+        this.Div_Button.anchor.setTo(0.5, 0.5);
+    }
+
+    update() {
+        //Scale Factor button up when hovering over
+        if (this.Factor_Button.input.pointerOver()) {
+            this.Factor_Button.scale.setTo(1.1, 1.1);
+        } else {
+            this.Factor_Button.scale.setTo(1, 1);
+        }
+
+        //Scale Mult button up when hovering over
+        if (this.Mult_Button.input.pointerOver()) {
+            this.Mult_Button.scale.setTo(1.1, 1.1);
+        } else {
+            this.Mult_Button.scale.setTo(1, 1);
+        }
+
+        //Scale Div button up when hovering over
+        if (this.Div_Button.input.pointerOver()) {
+            this.Div_Button.scale.setTo(1.1, 1.1);
+        } else {
+            this.Div_Button.scale.setTo(1, 1);
+        }
     }
 
 });
@@ -10973,10 +11000,10 @@ function actionOnClickDiv() {
     //Load scene assets to display
     preload() {
         this.load.image('Jungle', '../../assets/images/background_jungle.jpg');
-        this.load.image('Monkey', '../../assets/images/Monkey.png');
         this.load.image('Banana', '../../assets/images/banana_small.png');
         this.load.image('Arrow', '../../assets/images/arrow_yellow.png');
         this.load.image('menu', '../../assets/images/pause-b.png');
+        this.load.spritesheet('Monkey', '../../assets/images/user-monkey-spritesheet.png', 228, 305, 4);
     }
 
     create() {
@@ -10987,8 +11014,11 @@ function actionOnClickDiv() {
         //Apply ARCADE physics for all game components in this state
         this.physics.startSystem(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Physics.ARCADE);
 
-        //Reference Monkey sprite as image of game and bring into the scene
-        this.UserMonkey = this.add.sprite(0, this.world.centerY + this.world.centerY / 3, 'Monkey');
+        //Reference Monkey sprite sheet as image of game and bring into the scene and animate
+        this.UserMonkey = this.add.sprite(this.world.centerX, this.world._height, 'Monkey');
+        this.UserMonkey.anchor.setTo(0.5, 0.5);
+        this.UserMonkey.animations.add('walk');
+        this.UserMonkey.animations.play('walk', 5, true);
 
         //Enable body property and ARCADE physics on monkey sprite
         this.UserMonkey.enableBody = true;
@@ -10998,7 +11028,8 @@ function actionOnClickDiv() {
         this.UserMonkey.body.collideWorldBounds = true;
 
         //Creation of arrow button to exit state and return to game selection
-        this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
+        this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
+        this.Back_Arrow.anchor.setTo(0.5, 0.5);
 
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
         //Spawn Banana at top boundary of world at random x co-ordinate within provided range
@@ -11095,8 +11126,15 @@ function actionOnClickDiv() {
         };
     }
 
-    //Update function to update monkey's movement between frames
     update(delta) {
+        //Button animation for back arrow and pause
+        if (this.Back_Arrow.input.pointerOver()) {
+            this.Back_Arrow.scale.setTo(1.1, 1.1);
+        } else {
+            this.Back_Arrow.scale.setTo(1, 1);
+        }
+
+        //Update function to update monkey's movement between frames
         //Left movement
         if (this.key_A.isDown) {
             this.UserMonkey.x -= 15;
@@ -11271,7 +11309,16 @@ function actionGoBack() {
       boundsAlignH: "right" });
 
     //Display start button to enter game selection
-    this.add.button(this.world.centerX - 135, this.world.centerY + this.world.centerY / 4, 'Button', actionOnClick, this);
+    this.Start_Button = this.add.button(this.world.centerX, this.world.centerY + this.world.centerY / 4, 'Button', actionOnClick, this);
+    this.Start_Button.anchor.setTo(0.5, 0.5);
+  }
+
+  update() {
+    if (this.Start_Button.input.pointerOver()) {
+      this.Start_Button.scale.setTo(1.1, 1.1);
+    } else {
+      this.Start_Button.scale.setTo(1, 1);
+    }
   }
 });
 
@@ -11336,9 +11383,22 @@ function actionOnClick() {
             boundsAlignH: "right" });
 
         //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
-        this.add.button(this.world.centerX * 0.70, this.world.centerY, 'Diff_1', actionOnClickFact, this);
-        this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
-        this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
+        this.Diff_1_Button = this.add.button(this.world.centerX, this.world.centerY, 'Diff_1', actionOnClickFact, this);
+        this.Diff_2_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
+        this.Diff_3_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
+
+        this.Diff_1_Button.anchor.setTo(0.5, 0.5);
+        this.Diff_2_Button.anchor.setTo(0.5, 0.5);
+        this.Diff_3_Button.anchor.setTo(0.5, 0.5);
+    }
+
+    update() {
+        //Scale difficulty 1 button up when hovering over
+        if (this.Diff_1_Button.input.pointerOver()) {
+            this.Diff_1_Button.scale.setTo(1.1, 1.1);
+        } else {
+            this.Diff_1_Button.scale.setTo(1, 1);
+        }
     }
 
 });
@@ -11403,9 +11463,22 @@ function actionOnClickDiv() {
             boundsAlignH: "right" });
 
         //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
-        this.add.button(this.world.centerX * 0.70, this.world.centerY, 'Diff_1', actionOnClickFact, this);
-        this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
-        this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
+        this.Diff_1_Button = this.add.button(this.world.centerX, this.world.centerY, 'Diff_1', actionOnClickFact, this);
+        this.Diff_2_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
+        this.Diff_3_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
+
+        this.Diff_1_Button.anchor.setTo(0.5, 0.5);
+        this.Diff_2_Button.anchor.setTo(0.5, 0.5);
+        this.Diff_3_Button.anchor.setTo(0.5, 0.5);
+    }
+
+    update() {
+        //Scale difficulty 1 button up when hovering over
+        if (this.Diff_1_Button.input.pointerOver()) {
+            this.Diff_1_Button.scale.setTo(1.1, 1.1);
+        } else {
+            this.Diff_1_Button.scale.setTo(1, 1);
+        }
     }
 
 });
@@ -11470,9 +11543,22 @@ function actionOnClickDiv() {
             boundsAlignH: "right" });
 
         //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
-        this.add.button(this.world.centerX * 0.70, this.world.centerY, 'Diff_1', actionOnClickFact, this);
-        this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
-        this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
+        this.Diff_1_Button = this.add.button(this.world.centerX, this.world.centerY, 'Diff_1', actionOnClickFact, this);
+        this.Diff_2_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
+        this.Diff_3_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
+
+        this.Diff_1_Button.anchor.setTo(0.5, 0.5);
+        this.Diff_2_Button.anchor.setTo(0.5, 0.5);
+        this.Diff_3_Button.anchor.setTo(0.5, 0.5);
+    }
+
+    update() {
+        //Scale difficulty 1 button up when hovering over
+        if (this.Diff_1_Button.input.pointerOver()) {
+            this.Diff_1_Button.scale.setTo(1.1, 1.1);
+        } else {
+            this.Diff_1_Button.scale.setTo(1, 1);
+        }
     }
 
 });

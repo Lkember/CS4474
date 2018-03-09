@@ -13,10 +13,10 @@ export default class extends Phaser.State {
     //Load scene assets to display
     preload() {
         this.load.image('Jungle', '../../assets/images/background_jungle.jpg')
-        this.load.image('Monkey', '../../assets/images/Monkey.png')
         this.load.image('Banana', '../../assets/images/banana_small.png')
         this.load.image('Arrow', '../../assets/images/arrow_yellow.png')
         this.load.image('menu', '../../assets/images/pause-b.png')
+        this.load.spritesheet('Monkey', '../../assets/images/user-monkey-spritesheet.png',228 ,305, 4)
     }
 
     
@@ -28,8 +28,12 @@ export default class extends Phaser.State {
         //Apply ARCADE physics for all game components in this state
         this.physics.startSystem(Phaser.Physics.ARCADE)
 
-        //Reference Monkey sprite as image of game and bring into the scene
-        this.UserMonkey = this.add.sprite(0, this.world.centerY +(this.world.centerY/3), 'Monkey')
+        //Reference Monkey sprite sheet as image of game and bring into the scene and animate
+        this.UserMonkey = this.add.sprite(this.world.centerX, this.world._height, 'Monkey')
+        this.UserMonkey.anchor.setTo(0.5, 0.5)
+        this.UserMonkey.animations.add('walk')
+        this.UserMonkey.animations.play('walk', 5, true)
+
  
         //Enable body property and ARCADE physics on monkey sprite
         this.UserMonkey.enableBody = true
@@ -39,7 +43,8 @@ export default class extends Phaser.State {
         this.UserMonkey.body.collideWorldBounds = true
 
         //Creation of arrow button to exit state and return to game selection
-        this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
+        this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
+        this.Back_Arrow.anchor.setTo(0.5, 0.5)
 
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
         //Spawn Banana at top boundary of world at random x co-ordinate within provided range
@@ -136,8 +141,19 @@ export default class extends Phaser.State {
         };
     }
 
-    //Update function to update monkey's movement between frames
+    
     update(delta) {
+        //Button animation for back arrow and pause
+        if (this.Back_Arrow.input.pointerOver())
+        {
+            this.Back_Arrow.scale.setTo(1.1,1.1)
+        }
+        else
+        {
+            this.Back_Arrow.scale.setTo(1,1)
+        }
+
+        //Update function to update monkey's movement between frames
         //Left movement
         if (this.key_A.isDown) {
             this.UserMonkey.x -= 15

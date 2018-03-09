@@ -29,14 +29,14 @@ class Game extends Phaser.Game {
     this.state.add('Splash', SplashState, false)
     this.state.add('Game', GameState, false)
     this.state.add('Game_Factoring', GameStateFact, false)
-      this.state.add('Game_Multiplication', GameStateMult, false)
-      this.state.add('Game_Division', GameStateDiv, false)
+    this.state.add('Game_Multiplication', GameStateMult, false)
+    this.state.add('Game_Division', GameStateDiv, false)
     this.state.add('MainMenu', MainMenuState, false)
-      this.state.add('GameSelect', GameSelectState, false)
-      this.state.add('MusicSettings', MusicState, false)
-      this.state.add('Fact_dif',FactDifState, false)
-      this.state.add('Mult_dif', MultDifState, false)
-      this.state.add('Div_dif',DivDifState, false)
+    this.state.add('GameSelect', GameSelectState, false)
+    this.state.add('MusicSettings', MusicState, false)
+    this.state.add('Fact_dif',FactDifState, false)
+    this.state.add('Mult_dif', MultDifState, false)
+    this.state.add('Div_dif',DivDifState, false)
 
 
 

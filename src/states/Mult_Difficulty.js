@@ -33,9 +33,25 @@ export default class extends Phaser.State {
                 boundsAlignH:"right"})
 
         //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
-        this.add.button(this.world.centerX * 0.70, this.world.centerY, 'Diff_1', actionOnClickFact, this)
-        this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this)
-        this.add.button(this.world.centerX * 0.70, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this)
+        this.Diff_1_Button = this.add.button(this.world.centerX , this.world.centerY, 'Diff_1', actionOnClickFact, this)
+        this.Diff_2_Button = this.add.button(this.world.centerX , this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this)
+        this.Diff_3_Button = this.add.button(this.world.centerX , this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this)
+
+        this.Diff_1_Button.anchor.setTo(0.5, 0.5)
+        this.Diff_2_Button.anchor.setTo(0.5, 0.5)
+        this.Diff_3_Button.anchor.setTo(0.5, 0.5)
+    }
+
+    update(){
+        //Scale difficulty 1 button up when hovering over
+        if (this.Diff_1_Button.input.pointerOver())
+        {
+            this.Diff_1_Button.scale.setTo(1.1,1.1)
+        }
+        else
+        {
+            this.Diff_1_Button.scale.setTo(1,1)
+        }
     }
 
 }

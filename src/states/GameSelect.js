@@ -34,9 +34,46 @@ export default class extends Phaser.State {
                 boundsAlignH:"right"})
 
         //Display game buttons representing FACTORING, MULTIPLICATION & DIVISION
-        this.add.button(this.world.centerX * 0.65, this.world.centerY, 'ButtonFactor', actionOnClickFact, this)
-        this.add.button(this.world.centerX * 0.65, this.world.centerY * 1.3, 'ButtonMult', actionOnClickMult, this)
-        this.add.button(this.world.centerX * 0.65, this.world.centerY * 1.6, 'ButtonDiv', actionOnClickDiv, this)
+        this.Factor_Button = this.add.button(this.world.centerX , this.world.centerY, 'ButtonFactor', actionOnClickFact, this)
+        this.Mult_Button = this.add.button(this.world.centerX , this.world.centerY * 1.3, 'ButtonMult', actionOnClickMult, this)
+        this.Div_Button = this.add.button(this.world.centerX , this.world.centerY * 1.6, 'ButtonDiv', actionOnClickDiv, this)
+
+        this.Factor_Button.anchor.setTo(0.5,0.5)
+        this.Mult_Button.anchor.setTo(0.5,0.5)
+        this.Div_Button.anchor.setTo(0.5,0.5)
+    }
+
+    update(){
+        //Scale Factor button up when hovering over
+        if (this.Factor_Button.input.pointerOver())
+        {
+            this.Factor_Button.scale.setTo(1.1,1.1)
+        }
+        else
+        {
+            this.Factor_Button.scale.setTo(1,1)
+        }
+
+        //Scale Mult button up when hovering over
+        if (this.Mult_Button.input.pointerOver())
+        {
+            this.Mult_Button.scale.setTo(1.1,1.1)
+        }
+        else
+        {
+            this.Mult_Button.scale.setTo(1,1)
+        }
+
+        //Scale Div button up when hovering over
+        if (this.Div_Button.input.pointerOver())
+        {
+            this.Div_Button.scale.setTo(1.1,1.1)
+        }
+        else
+        {
+            this.Div_Button.scale.setTo(1,1)
+        }
+
     }
 
 }

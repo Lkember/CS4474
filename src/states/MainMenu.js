@@ -37,7 +37,19 @@ export default class extends Phaser.State {
            boundsAlignH:"right"})
 
       //Display start button to enter game selection
-      this.add.button(this.world.centerX - 135, this.world.centerY + (this.world.centerY/4), 'Button', actionOnClick, this)
+      this.Start_Button = this.add.button(this.world.centerX, this.world.centerY + (this.world.centerY/4), 'Button', actionOnClick, this)
+      this.Start_Button.anchor.setTo(0.5, 0.5)
+    }
+
+    update(){
+      if (this.Start_Button.input.pointerOver())
+      {
+          this.Start_Button.scale.setTo(1.1,1.1)
+      }
+      else
+      {
+          this.Start_Button.scale.setTo(1,1)
+      }
     }
 }
 
