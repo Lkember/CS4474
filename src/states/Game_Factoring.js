@@ -5,7 +5,7 @@
  * Language: ES6
  */
 import Phaser from 'phaser'
-import Queue from './Queue.js'
+import Queue from './logic/Queue.js'
 
 export default class extends Phaser.State {
     init() {
@@ -90,9 +90,9 @@ export default class extends Phaser.State {
         this.Banana.events.onOutOfBounds.add(banana_out, this)
         this.Banana.events.onKilled.add(banana_out, this)   //Code Line for testing collision//
 
-        var selection = []
+        var value = answers[0]
         //Add text component to display factors on falling bananas
-        var text = this.add.text(20,30,answers[i],
+        var text = this.add.text(20,30,value,
                 {font: "16px Arial",
                  fontWeight: "bold",
                  fill: "#FFFFFF",
