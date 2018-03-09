@@ -5,11 +5,10 @@
  * Language: ES6
  */
 import Phaser from 'phaser'
-import Queue from './logic/Queue.js'
+//import Queue from './logic/Queue.js'
 
 export default class extends Phaser.State {
-    init() {
-
+    init() { 
     }
 
     //Load scene assets to display
@@ -47,6 +46,7 @@ export default class extends Phaser.State {
         this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
 
         //---------------------------------------------FACTOR LOGIC COMPONENT------------------------------------
+
         // creating an array to store the non-prime numbers 
         var correct = true // need a check to check if the user has answered correctly, then switch to a new number
         var selLevel = 12 // need to figure out how to move this into file
@@ -64,6 +64,7 @@ export default class extends Phaser.State {
             
             answers = getFactors(value) // Create an array of answers that are factors of the Non-Prime
 
+
             if(correct){ // if the answers are now right, then change up the left number
                 var factorText = this.add.text(this.world.centerX*0.35,this.world.centerY * 0.65,value,
                  {font: "16px Arial",
@@ -76,8 +77,14 @@ export default class extends Phaser.State {
             break
         }
 
+        // shuffled answers array
+        var randomized = shuffle(answers)
+        var queue = new Queue()  //stores answers into a queue that can be enqueued or dequeued easily
+        for(var i = 0; i < randomized.length; i++){
+            queue.enqueue(randomized[i])
+            console.log(randomized[i])
+        }
 
-        
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
         //Spawn Banana at top boundary of world at random x co-ordinate within provided range
         this.Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana')
@@ -87,10 +94,11 @@ export default class extends Phaser.State {
         // Set gravity and make sure banana is reset once it leaves world bounds or is killed
         this.Banana.body.gravity.y = 50
         this.Banana.checkWorldBounds = true;
-        this.Banana.events.onOutOfBounds.add(banana_out, this)
-        this.Banana.events.onKilled.add(banana_out, this)   //Code Line for testing collision//
-
-        var value = answers[0]
+        this.Banana.events.onOutOfBounds.add(banana_out(queue), this)
+        this.Banana.events.onKilled.add(banana_out(queue), this)   //Code Line for testing collision//
+        
+        var j = 0
+        var value = answers[j]
         //Add text component to display factors on falling bananas
         var text = this.add.text(20,30,value,
                 {font: "16px Arial",
@@ -211,11 +219,87 @@ function getFactors(integer){
   return factors;
 }
 
+// shuffle array to give randomness
+function shuffle(array) {
+    let counter = array.length;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        let temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
+}
+
 // check if number is prime
 function isPrime(num) {
   for(var i = 2; i < num; i++)
     if(num % i === 0) return false;
   return num !== 1;
+}
+
+function Queue(){
+
+  // initialise the queue and offset
+  var queue  = [];
+  var offset = 0;
+
+  // Returns the length of the queue.
+  this.getLength = function(){
+    return (queue.length - offset);
+  }
+
+  // Returns true if the queue is empty, and false otherwise.
+  this.isEmpty = function(){
+    return (queue.length == 0);
+  }
+
+  /* Enqueues the specified item. The parameter is:
+   *
+   * item - the item to enqueue
+   */
+  this.enqueue = function(item){
+    queue.push(item);
+  }
+
+  /* Dequeues an item and returns it. If the queue is empty, the value
+   * 'undefined' is returned.
+   */
+  this.dequeue = function(){
+
+    // if the queue is empty, return immediately
+    if (queue.length == 0) return undefined;
+
+    // store the item at the front of the queue
+    var item = queue[offset];
+
+    // increment the offset and remove the free space if necessary
+    if (++ offset * 2 >= queue.length){
+      queue  = queue.slice(offset);
+      offset = 0;
+    }
+
+    // return the dequeued item
+    return item;
+
+  }
+
+  /* Returns the item at the front of the queue (without dequeuing it). If the
+   * queue is empty then undefined is returned.
+   */
+  this.peek = function(){
+    return (queue.length > 0 ? queue[offset] : undefined);
+  }
+
 }
 
 //If objects collide, destroy second object

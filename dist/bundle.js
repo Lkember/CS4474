@@ -10959,8 +10959,6 @@ function actionOnClickDiv() {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser__ = __webpack_require__(/*! phaser */ 11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_phaser__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__logic_Queue_js__ = __webpack_require__(/*! ./logic/Queue.js */ 353);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__logic_Queue_js___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__logic_Queue_js__);
 /**
  * @file: Game_Factoring.js
  * Purpose: Game instance for factoring game
@@ -10968,7 +10966,7 @@ function actionOnClickDiv() {
  * Language: ES6
  */
 
-
+//import Queue from './logic/Queue.js'
 
 /* harmony default export */ __webpack_exports__["a"] = (class extends __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.State {
     init() {}
@@ -11007,6 +11005,7 @@ function actionOnClickDiv() {
         this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
 
         //---------------------------------------------FACTOR LOGIC COMPONENT------------------------------------
+
         // creating an array to store the non-prime numbers 
         var correct = true; // need a check to check if the user has answered correctly, then switch to a new number
         var selLevel = 12; // need to figure out how to move this into file
@@ -11024,6 +11023,7 @@ function actionOnClickDiv() {
 
             answers = getFactors(value); // Create an array of answers that are factors of the Non-Prime
 
+
             if (correct) {
                 // if the answers are now right, then change up the left number
                 var factorText = this.add.text(this.world.centerX * 0.35, this.world.centerY * 0.65, value, { font: "16px Arial",
@@ -11036,6 +11036,14 @@ function actionOnClickDiv() {
             break;
         }
 
+        // shuffled answers array
+        var randomized = shuffle(answers);
+        var queue = new Queue(); //stores answers into a queue that can be enqueued or dequeued easily
+        for (var i = 0; i < randomized.length; i++) {
+            queue.enqueue(randomized[i]);
+            console.log(randomized[i]);
+        }
+
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
         //Spawn Banana at top boundary of world at random x co-ordinate within provided range
         this.Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana');
@@ -11045,10 +11053,10 @@ function actionOnClickDiv() {
         // Set gravity and make sure banana is reset once it leaves world bounds or is killed
         this.Banana.body.gravity.y = 50;
         this.Banana.checkWorldBounds = true;
-        this.Banana.events.onOutOfBounds.add(banana_out, this);
-        this.Banana.events.onKilled.add(banana_out, this); //Code Line for testing collision//
-
-        var value = answers[0];
+        this.Banana.events.onOutOfBounds.add(banana_out(queue), this);
+        this.Banana.events.onKilled.add(banana_out(queue), this); //Code Line for testing collision//
+        var j = 0;
+        var value = answers[j];
         //Add text component to display factors on falling bananas
         var text = this.add.text(20, 30, value, { font: "16px Arial",
             fontWeight: "bold",
@@ -11169,10 +11177,84 @@ function getFactors(integer) {
     return factors;
 }
 
+// shuffle array to give randomness
+function shuffle(array) {
+    let counter = array.length;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        let temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
+}
+
 // check if number is prime
 function isPrime(num) {
     for (var i = 2; i < num; i++) if (num % i === 0) return false;
     return num !== 1;
+}
+
+function Queue() {
+
+    // initialise the queue and offset
+    var queue = [];
+    var offset = 0;
+
+    // Returns the length of the queue.
+    this.getLength = function () {
+        return queue.length - offset;
+    };
+
+    // Returns true if the queue is empty, and false otherwise.
+    this.isEmpty = function () {
+        return queue.length == 0;
+    };
+
+    /* Enqueues the specified item. The parameter is:
+     *
+     * item - the item to enqueue
+     */
+    this.enqueue = function (item) {
+        queue.push(item);
+    };
+
+    /* Dequeues an item and returns it. If the queue is empty, the value
+     * 'undefined' is returned.
+     */
+    this.dequeue = function () {
+
+        // if the queue is empty, return immediately
+        if (queue.length == 0) return undefined;
+
+        // store the item at the front of the queue
+        var item = queue[offset];
+
+        // increment the offset and remove the free space if necessary
+        if (++offset * 2 >= queue.length) {
+            queue = queue.slice(offset);
+            offset = 0;
+        }
+
+        // return the dequeued item
+        return item;
+    };
+
+    /* Returns the item at the front of the queue (without dequeuing it). If the
+     * queue is empty then undefined is returned.
+     */
+    this.peek = function () {
+        return queue.length > 0 ? queue[offset] : undefined;
+    };
 }
 
 //If objects collide, destroy second object
@@ -11548,84 +11630,6 @@ function actionOnClickMult() {
 //Function called on button to begin DIVISION game with difficulty 3 (Locked)
 function actionOnClickDiv() {
     console.log("Difficulty 3 Locked");
-}
-
-/***/ }),
-/* 352 */,
-/* 353 */
-/*!***********************************!*\
-  !*** ./src/states/logic/Queue.js ***!
-  \***********************************/
-/*! dynamic exports provided */
-/***/ (function(module, exports) {
-
-/*
-
-Queue.js
-
-A function to represent a queue
-
-Created by Kate Morley - http://code.iamkate.com/ - and released under the terms
-of the CC0 1.0 Universal legal code:
-
-http://creativecommons.org/publicdomain/zero/1.0/legalcode
-
-*/
-
-/* Creates a new queue. A queue is a first-in-first-out (FIFO) data structure -
- * items are added to the end of the queue and removed from the front.
- */
-function Queue() {
-
-  // initialise the queue and offset
-  var queue = [];
-  var offset = 0;
-
-  // Returns the length of the queue.
-  this.getLength = function () {
-    return queue.length - offset;
-  };
-
-  // Returns true if the queue is empty, and false otherwise.
-  this.isEmpty = function () {
-    return queue.length == 0;
-  };
-
-  /* Enqueues the specified item. The parameter is:
-   *
-   * item - the item to enqueue
-   */
-  this.enqueue = function (item) {
-    queue.push(item);
-  };
-
-  /* Dequeues an item and returns it. If the queue is empty, the value
-   * 'undefined' is returned.
-   */
-  this.dequeue = function () {
-
-    // if the queue is empty, return immediately
-    if (queue.length == 0) return undefined;
-
-    // store the item at the front of the queue
-    var item = queue[offset];
-
-    // increment the offset and remove the free space if necessary
-    if (++offset * 2 >= queue.length) {
-      queue = queue.slice(offset);
-      offset = 0;
-    }
-
-    // return the dequeued item
-    return item;
-  };
-
-  /* Returns the item at the front of the queue (without dequeuing it). If the
-   * queue is empty then undefined is returned.
-   */
-  this.peek = function () {
-    return queue.length > 0 ? queue[offset] : undefined;
-  };
 }
 
 /***/ })
