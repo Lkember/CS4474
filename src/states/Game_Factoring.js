@@ -5,14 +5,17 @@
  * Language: ES6
  */
 import Phaser from 'phaser'
+import Queue from './Queue.js'
 
 export default class extends Phaser.State {
     init() {
+
     }
 
     //Load scene assets to display
     preload() {
         this.load.image('Jungle', '../../assets/images/background_jungle.jpg')
+        this.load.image('ProfMonkey', '../../assets/images/prof-monkey.png')
         this.load.image('Monkey', '../../assets/images/Monkey.png')
         this.load.image('Banana', '../../assets/images/banana_small.png')
         this.load.image('Arrow', '../../assets/images/arrow_yellow.png')
@@ -24,6 +27,8 @@ export default class extends Phaser.State {
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
         var Background = this.add.image(0, 0, 'Jungle')
+        var profMonkey = this.add.image(0, this.world.centerY * 0.2, 'ProfMonkey')
+        profMonkey.inputEnabled = true;
 
         //Apply ARCADE physics for all game components in this state
         this.physics.startSystem(Phaser.Physics.ARCADE)
@@ -41,6 +46,38 @@ export default class extends Phaser.State {
         //Creation of arrow button to exit state and return to game selection
         this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
 
+        //---------------------------------------------FACTOR LOGIC COMPONENT------------------------------------
+        // creating an array to store the non-prime numbers 
+        var correct = true // need a check to check if the user has answered correctly, then switch to a new number
+        var selLevel = 12 // need to figure out how to move this into file
+        var numbers = []   // array that stores all the questions
+        for(var i = selLevel; i > 0; i--){
+            if(isPrime(i) == false){
+                numbers.push(i)
+            }
+        }
+
+        var answers = []
+        // Display Non-Prime numbers on the left side
+        for(var i = 0; i < numbers.length; i++){
+            var value = numbers[i]
+            
+            answers = getFactors(value) // Create an array of answers that are factors of the Non-Prime
+
+            if(correct){ // if the answers are now right, then change up the left number
+                var factorText = this.add.text(this.world.centerX*0.35,this.world.centerY * 0.65,value,
+                 {font: "16px Arial",
+                    fontWeight: "bold",
+                    fill: "#000000",
+                    boundsAlignH:"right",
+                    boundsAlignV: "bottom"})
+                    profMonkey.addChild(factorText)
+            }
+            break
+        }
+
+
+        
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
         //Spawn Banana at top boundary of world at random x co-ordinate within provided range
         this.Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana')
@@ -53,14 +90,15 @@ export default class extends Phaser.State {
         this.Banana.events.onOutOfBounds.add(banana_out, this)
         this.Banana.events.onKilled.add(banana_out, this)   //Code Line for testing collision//
 
-        //Add text component to display numbers on falling bananas
-        var text = this.add.text(20,30,"Number",
-            {font: "16px Arial",
-             fontWeight: "bold",
-             fill: "#FFFFFF",
-             boundsAlignH:"right",
-             boundsAlignV: "bottom"})
-        this.Banana.addChild(text)
+        var selection = []
+        //Add text component to display factors on falling bananas
+        var text = this.add.text(20,30,answers[i],
+                {font: "16px Arial",
+                 fontWeight: "bold",
+                 fill: "#FFFFFF",
+                 boundsAlignH:"right",
+                 boundsAlignV: "bottom"})
+            this.Banana.addChild(text)
 
         //----------------------------------------------PLAYER CONTROLS------------------------------------------
         //Map D key to move monkey to the right
@@ -156,6 +194,28 @@ export default class extends Phaser.State {
         //Check collision with UserMonkey and Banana
         this.physics.arcade.collide(this.UserMonkey, this.Banana, collisionHandler, null, this);
     }
+}
+
+// finding the factors
+function getFactors(integer){
+  var factors = [],
+  quotient = 0;
+
+  for(var i = 1; i <= integer; i++){
+    quotient = integer/i;
+
+    if(quotient === Math.floor(quotient)){
+      factors.push(i); 
+    }
+  }
+  return factors;
+}
+
+// check if number is prime
+function isPrime(num) {
+  for(var i = 2; i < num; i++)
+    if(num % i === 0) return false;
+  return num !== 1;
 }
 
 //If objects collide, destroy second object
