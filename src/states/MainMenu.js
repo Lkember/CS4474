@@ -30,11 +30,12 @@ export default class extends Phaser.State {
       Background.height = this.world.height
 
       //Display game title (NEEDS STYLING**)
-      var text = this.add.text(this.world.centerX * 0.65, this.world.centerY/4,"Arithmetic Monkeys",
-          {font: "60px Arial",
+      var text = this.add.text(this.world.centerX, this.world.centerY/4,"Arithmetic Monkeys",
+          {font: "60px jungle_font",
            fontWeight: "bold",
            fill: "#FFD700",
            boundsAlignH:"right"})
+      text.anchor.setTo(0.5, 0.5)
 
       //Display start button to enter game selection
       this.Start_Button = this.add.button(this.world.centerX, this.world.centerY + (this.world.centerY/4), 'Button', actionOnClick, this)

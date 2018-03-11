@@ -5,8 +5,12 @@
  * Language: ES6
  */
 import Phaser from 'phaser'
+import { stringify } from 'querystring';
+
+var Queue_Num = 0;
 
 export default class extends Phaser.State {
+    
     init() {
     }
 
@@ -15,12 +19,13 @@ export default class extends Phaser.State {
         this.load.image('Jungle', '../../assets/images/background_jungle.jpg')
         this.load.image('Banana', '../../assets/images/banana_small.png')
         this.load.image('Arrow', '../../assets/images/arrow_yellow.png')
+        this.load.image('Pause', '../../assets/images/pause_yellow.png')
         this.load.image('menu', '../../assets/images/pause-b.png')
         this.load.spritesheet('Monkey', '../../assets/images/user-monkey-spritesheet.png',228 ,305, 4)
     }
 
-    
     create() {
+
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
         var Background = this.add.image(0, 0, 'Jungle')
@@ -46,8 +51,29 @@ export default class extends Phaser.State {
         this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
         this.Back_Arrow.anchor.setTo(0.5, 0.5)
 
+        //-----------------------------------------------GAME LOGIC----------------------------------------------
+        var easy = [4,6,8,9,10,12]
+        var medium = []
+        var hard = []
+
+        this.queue = []
+
+        var number_eq = easy[this.rnd.integerInRange(0,easy.length-1)]
+        console.log("The number to factor: " + number_eq)
+        for(var i=1; i<=number_eq; i++){
+            if (number_eq % i == 0){
+                this.queue.push(i)
+                console.log("# is factor: " + i)
+            }
+        }
+        this.add.text(this.world.centerX, 0, String(number_eq),{font:"20px Arial", fill:"#FFFFFF"})
+
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
         //Spawn Banana at top boundary of world at random x co-ordinate within provided range
+        Queue_Num = this.queue.pop()
+
+
+        //this.Queue_Num = this.queue.pop()
         this.Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana')
         this.Banana.inputEnabled = true;
         this.physics.enable(this.Banana, Phaser.Physics.ARCADE)
@@ -55,17 +81,21 @@ export default class extends Phaser.State {
         // Set gravity and make sure banana is reset once it leaves world bounds or is killed
         this.Banana.body.gravity.y = 50
         this.Banana.checkWorldBounds = true;
-        this.Banana.events.onOutOfBounds.add(banana_out, this)
-        this.Banana.events.onKilled.add(banana_out, this)   //Code Line for testing collision//
 
         //Add text component to display numbers on falling bananas
-        var text = this.add.text(20,30,"Number",
+        var text = this.add.text(20,30,String(Queue_Num),
             {font: "16px Arial",
-             fontWeight: "bold",
-             fill: "#FFFFFF",
-             boundsAlignH:"right",
-             boundsAlignV: "bottom"})
+            fontWeight: "bold",
+            fill: "#FFFFFF",
+            boundsAlignH:"right",
+            boundsAlignV: "bottom"})
         this.Banana.addChild(text)
+
+        console.log("Currently in if for "+ Queue_Num)
+        this.Banana.events.onOutOfBounds.add(banana_out, this,0, Queue_Num+1)
+        console.log("Queue_Num + 1: " + (Queue_Num + 1))
+        this.Banana.events.onKilled.add(banana_out,this,0, Queue_Num + 1)   //Code Line for testing collisio
+
 
         //----------------------------------------------PLAYER CONTROLS------------------------------------------
         //Map D key to move monkey to the right
@@ -85,14 +115,11 @@ export default class extends Phaser.State {
         var menu, choiseLabel;
         
         //Create a label to use as a button
-        var pause_label = this.add.text(this.world.centerX , this.world.centerY * 0.1, 'Pause',
-            { font: '24px Arial',
-              fontWeight: "bold",
-                fill: '#fff',
-            });
-        pause_label.inputEnabled = true;
+        this.pause_label = this.add.image(this.world.centerX * 1.9 , this.world.centerY * 0.1, 'Pause')
+        this.pause_label.anchor.setTo(0.5, 0.5)
+        this.pause_label.inputEnabled = true;
 
-        pause_label.events.onInputUp.add(function () {
+        this.pause_label.events.onInputUp.add(function () {
             //When the pause button is pressed, we pause the game
             game.paused = true;
             //Then add the menu
@@ -143,7 +170,9 @@ export default class extends Phaser.State {
 
     
     update(delta) {
-        //Button animation for back arrow and pause
+
+        this.Banana_Alive
+        //Back arrow scale on hover
         if (this.Back_Arrow.input.pointerOver())
         {
             this.Back_Arrow.scale.setTo(1.1,1.1)
@@ -151,6 +180,16 @@ export default class extends Phaser.State {
         else
         {
             this.Back_Arrow.scale.setTo(1,1)
+        }
+
+        //Pause button scale on hover
+        if (this.pause_label.input.pointerOver())
+        {
+            this.pause_label.scale.setTo(1.1,1.1)
+        }
+            else
+        {
+            this.pause_label.scale.setTo(1,1)
         }
 
         //Update function to update monkey's movement between frames
@@ -176,6 +215,7 @@ export default class extends Phaser.State {
 
 //If objects collide, destroy second object
 function collisionHandler(object1, object2){
+    //this.Banana_Alive=false
     object2.kill()
 }
 
@@ -185,7 +225,25 @@ function actionGoBack () {
 }
 
 //Function to reset banana position once it leaves world boundary
-function banana_out(Banana){
+function banana_out(value){
+    console.log(value)
+    this.Banana.removeChildren()
     this.Banana.reset(this.rnd.integerInRange(0,game.width), 0)
+    var text2 = this.add.text(20,30,String(value),
+        {font: "16px Arial",
+        fontWeight: "bold",
+        fill: "#FFFFFF",
+        boundsAlignH:"right",
+        boundsAlignV: "bottom"})
+    this.Banana.addChild(text2)
 }
 
+//Small function to determine if value is prime or not
+function isPrime(value){
+    for(var i = 2; i < value; i++){
+        if(value % 1 === 0){
+            return false
+        }
+    }
+    return value >1
+}

@@ -10607,14 +10607,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__states_Game__ = __webpack_require__(/*! ./states/Game */ 341);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__states_GameSelect__ = __webpack_require__(/*! ./states/GameSelect */ 343);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__states_Game_Factoring__ = __webpack_require__(/*! ./states/Game_Factoring */ 344);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__states_Game_Multiplication__ = __webpack_require__(/*! ./states/Game_Multiplication */ 345);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__states_Game_Division__ = __webpack_require__(/*! ./states/Game_Division */ 346);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__states_MainMenu__ = __webpack_require__(/*! ./states/MainMenu */ 347);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__states_MusicSettings__ = __webpack_require__(/*! ./states/MusicSettings */ 348);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__states_Game_Multiplication__ = __webpack_require__(/*! ./states/Game_Multiplication */ 348);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__states_Game_Division__ = __webpack_require__(/*! ./states/Game_Division */ 349);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__states_MainMenu__ = __webpack_require__(/*! ./states/MainMenu */ 350);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__states_MusicSettings__ = __webpack_require__(/*! ./states/MusicSettings */ 351);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__states_MusicSettings___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_11__states_MusicSettings__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__states_Fact_Difficulty__ = __webpack_require__(/*! ./states/Fact_Difficulty */ 349);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__states_Mult_Difficulty__ = __webpack_require__(/*! ./states/Mult_Difficulty */ 350);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__states_Div_Difficulty__ = __webpack_require__(/*! ./states/Div_Difficulty */ 351);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__states_Fact_Difficulty__ = __webpack_require__(/*! ./states/Fact_Difficulty */ 352);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__states_Mult_Difficulty__ = __webpack_require__(/*! ./states/Mult_Difficulty */ 353);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__states_Div_Difficulty__ = __webpack_require__(/*! ./states/Div_Difficulty */ 354);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__config__ = __webpack_require__(/*! ./config */ 129);
 
 
@@ -10986,6 +10986,8 @@ function actionOnClickDiv() {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser__ = __webpack_require__(/*! phaser */ 11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_phaser___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_phaser__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_querystring__ = __webpack_require__(/*! querystring */ 345);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_querystring___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_querystring__);
 /**
  * @file: Game_Factoring.js
  * Purpose: Game instance for factoring game
@@ -10994,7 +10996,11 @@ function actionOnClickDiv() {
  */
 
 
+
+var Queue_Num = 0;
+
 /* harmony default export */ __webpack_exports__["a"] = (class extends __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.State {
+
     init() {}
 
     //Load scene assets to display
@@ -11002,11 +11008,13 @@ function actionOnClickDiv() {
         this.load.image('Jungle', '../../assets/images/background_jungle.jpg');
         this.load.image('Banana', '../../assets/images/banana_small.png');
         this.load.image('Arrow', '../../assets/images/arrow_yellow.png');
+        this.load.image('Pause', '../../assets/images/pause_yellow.png');
         this.load.image('menu', '../../assets/images/pause-b.png');
         this.load.spritesheet('Monkey', '../../assets/images/user-monkey-spritesheet.png', 228, 305, 4);
     }
 
     create() {
+
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
         var Background = this.add.image(0, 0, 'Jungle');
@@ -11031,8 +11039,28 @@ function actionOnClickDiv() {
         this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
         this.Back_Arrow.anchor.setTo(0.5, 0.5);
 
+        //-----------------------------------------------GAME LOGIC----------------------------------------------
+        var easy = [4, 6, 8, 9, 10, 12];
+        var medium = [];
+        var hard = [];
+
+        this.queue = [];
+
+        var number_eq = easy[this.rnd.integerInRange(0, easy.length - 1)];
+        console.log("The number to factor: " + number_eq);
+        for (var i = 1; i <= number_eq; i++) {
+            if (number_eq % i == 0) {
+                this.queue.push(i);
+                console.log("# is factor: " + i);
+            }
+        }
+        this.add.text(this.world.centerX, 0, String(number_eq), { font: "20px Arial", fill: "#FFFFFF" });
+
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
         //Spawn Banana at top boundary of world at random x co-ordinate within provided range
+        Queue_Num = this.queue.pop();
+
+        //this.Queue_Num = this.queue.pop()
         this.Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana');
         this.Banana.inputEnabled = true;
         this.physics.enable(this.Banana, __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Physics.ARCADE);
@@ -11040,16 +11068,20 @@ function actionOnClickDiv() {
         // Set gravity and make sure banana is reset once it leaves world bounds or is killed
         this.Banana.body.gravity.y = 50;
         this.Banana.checkWorldBounds = true;
-        this.Banana.events.onOutOfBounds.add(banana_out, this);
-        this.Banana.events.onKilled.add(banana_out, this); //Code Line for testing collision//
 
         //Add text component to display numbers on falling bananas
-        var text = this.add.text(20, 30, "Number", { font: "16px Arial",
+        var text = this.add.text(20, 30, String(Queue_Num), { font: "16px Arial",
             fontWeight: "bold",
             fill: "#FFFFFF",
             boundsAlignH: "right",
             boundsAlignV: "bottom" });
         this.Banana.addChild(text);
+
+        console.log("Currently in if for " + Queue_Num);
+        this.Banana.events.onOutOfBounds.add(banana_out, this, 0, Queue_Num + 1);
+        console.log("Queue_Num + 1: " + (Queue_Num + 1));
+        this.Banana.events.onKilled.add(banana_out, this, 0, Queue_Num + 1); //Code Line for testing collisio
+
 
         //----------------------------------------------PLAYER CONTROLS------------------------------------------
         //Map D key to move monkey to the right
@@ -11070,13 +11102,11 @@ function actionOnClickDiv() {
         var menu, choiseLabel;
 
         //Create a label to use as a button
-        var pause_label = this.add.text(this.world.centerX, this.world.centerY * 0.1, 'Pause', { font: '24px Arial',
-            fontWeight: "bold",
-            fill: '#fff'
-        });
-        pause_label.inputEnabled = true;
+        this.pause_label = this.add.image(this.world.centerX * 1.9, this.world.centerY * 0.1, 'Pause');
+        this.pause_label.anchor.setTo(0.5, 0.5);
+        this.pause_label.inputEnabled = true;
 
-        pause_label.events.onInputUp.add(function () {
+        this.pause_label.events.onInputUp.add(function () {
             //When the pause button is pressed, we pause the game
             game.paused = true;
             //Then add the menu
@@ -11127,11 +11157,20 @@ function actionOnClickDiv() {
     }
 
     update(delta) {
-        //Button animation for back arrow and pause
+
+        this.Banana_Alive;
+        //Back arrow scale on hover
         if (this.Back_Arrow.input.pointerOver()) {
             this.Back_Arrow.scale.setTo(1.1, 1.1);
         } else {
             this.Back_Arrow.scale.setTo(1, 1);
+        }
+
+        //Pause button scale on hover
+        if (this.pause_label.input.pointerOver()) {
+            this.pause_label.scale.setTo(1.1, 1.1);
+        } else {
+            this.pause_label.scale.setTo(1, 1);
         }
 
         //Update function to update monkey's movement between frames
@@ -11157,6 +11196,7 @@ function actionOnClickDiv() {
 
 //If objects collide, destroy second object
 function collisionHandler(object1, object2) {
+    //this.Banana_Alive=false
     object2.kill();
 }
 
@@ -11166,12 +11206,238 @@ function actionGoBack() {
 }
 
 //Function to reset banana position once it leaves world boundary
-function banana_out(Banana) {
+function banana_out(value) {
+    console.log(value);
+    this.Banana.removeChildren();
     this.Banana.reset(this.rnd.integerInRange(0, game.width), 0);
+    var text2 = this.add.text(20, 30, String(value), { font: "16px Arial",
+        fontWeight: "bold",
+        fill: "#FFFFFF",
+        boundsAlignH: "right",
+        boundsAlignV: "bottom" });
+    this.Banana.addChild(text2);
+}
+
+//Small function to determine if value is prime or not
+function isPrime(value) {
+    for (var i = 2; i < value; i++) {
+        if (value % 1 === 0) {
+            return false;
+        }
+    }
+    return value > 1;
 }
 
 /***/ }),
 /* 345 */
+/*!***********************************************!*\
+  !*** ./node_modules/querystring-es3/index.js ***!
+  \***********************************************/
+/*! dynamic exports provided */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+exports.decode = exports.parse = __webpack_require__(/*! ./decode */ 346);
+exports.encode = exports.stringify = __webpack_require__(/*! ./encode */ 347);
+
+
+/***/ }),
+/* 346 */
+/*!************************************************!*\
+  !*** ./node_modules/querystring-es3/decode.js ***!
+  \************************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+// If obj.hasOwnProperty has been overridden, then calling
+// obj.hasOwnProperty(prop) will break.
+// See: https://github.com/joyent/node/issues/1707
+function hasOwnProperty(obj, prop) {
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+module.exports = function(qs, sep, eq, options) {
+  sep = sep || '&';
+  eq = eq || '=';
+  var obj = {};
+
+  if (typeof qs !== 'string' || qs.length === 0) {
+    return obj;
+  }
+
+  var regexp = /\+/g;
+  qs = qs.split(sep);
+
+  var maxKeys = 1000;
+  if (options && typeof options.maxKeys === 'number') {
+    maxKeys = options.maxKeys;
+  }
+
+  var len = qs.length;
+  // maxKeys <= 0 means that we should not limit keys count
+  if (maxKeys > 0 && len > maxKeys) {
+    len = maxKeys;
+  }
+
+  for (var i = 0; i < len; ++i) {
+    var x = qs[i].replace(regexp, '%20'),
+        idx = x.indexOf(eq),
+        kstr, vstr, k, v;
+
+    if (idx >= 0) {
+      kstr = x.substr(0, idx);
+      vstr = x.substr(idx + 1);
+    } else {
+      kstr = x;
+      vstr = '';
+    }
+
+    k = decodeURIComponent(kstr);
+    v = decodeURIComponent(vstr);
+
+    if (!hasOwnProperty(obj, k)) {
+      obj[k] = v;
+    } else if (isArray(obj[k])) {
+      obj[k].push(v);
+    } else {
+      obj[k] = [obj[k], v];
+    }
+  }
+
+  return obj;
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+
+/***/ }),
+/* 347 */
+/*!************************************************!*\
+  !*** ./node_modules/querystring-es3/encode.js ***!
+  \************************************************/
+/*! dynamic exports provided */
+/*! all exports used */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+// Copyright Joyent, Inc. and other Node contributors.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a
+// copy of this software and associated documentation files (the
+// "Software"), to deal in the Software without restriction, including
+// without limitation the rights to use, copy, modify, merge, publish,
+// distribute, sublicense, and/or sell copies of the Software, and to permit
+// persons to whom the Software is furnished to do so, subject to the
+// following conditions:
+//
+// The above copyright notice and this permission notice shall be included
+// in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+
+
+var stringifyPrimitive = function(v) {
+  switch (typeof v) {
+    case 'string':
+      return v;
+
+    case 'boolean':
+      return v ? 'true' : 'false';
+
+    case 'number':
+      return isFinite(v) ? v : '';
+
+    default:
+      return '';
+  }
+};
+
+module.exports = function(obj, sep, eq, name) {
+  sep = sep || '&';
+  eq = eq || '=';
+  if (obj === null) {
+    obj = undefined;
+  }
+
+  if (typeof obj === 'object') {
+    return map(objectKeys(obj), function(k) {
+      var ks = encodeURIComponent(stringifyPrimitive(k)) + eq;
+      if (isArray(obj[k])) {
+        return map(obj[k], function(v) {
+          return ks + encodeURIComponent(stringifyPrimitive(v));
+        }).join(sep);
+      } else {
+        return ks + encodeURIComponent(stringifyPrimitive(obj[k]));
+      }
+    }).join(sep);
+
+  }
+
+  if (!name) return '';
+  return encodeURIComponent(stringifyPrimitive(name)) + eq +
+         encodeURIComponent(stringifyPrimitive(obj));
+};
+
+var isArray = Array.isArray || function (xs) {
+  return Object.prototype.toString.call(xs) === '[object Array]';
+};
+
+function map (xs, f) {
+  if (xs.map) return xs.map(f);
+  var res = [];
+  for (var i = 0; i < xs.length; i++) {
+    res.push(f(xs[i], i));
+  }
+  return res;
+}
+
+var objectKeys = Object.keys || function (obj) {
+  var res = [];
+  for (var key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) res.push(key);
+  }
+  return res;
+};
+
+
+/***/ }),
+/* 348 */
 /*!*******************************************!*\
   !*** ./src/states/Game_Multiplication.js ***!
   \*******************************************/
@@ -11215,7 +11481,7 @@ function actionGoBack() {
 }
 
 /***/ }),
-/* 346 */
+/* 349 */
 /*!*************************************!*\
   !*** ./src/states/Game_Division.js ***!
   \*************************************/
@@ -11260,7 +11526,7 @@ function actionGoBack() {
 }
 
 /***/ }),
-/* 347 */
+/* 350 */
 /*!********************************!*\
   !*** ./src/states/MainMenu.js ***!
   \********************************/
@@ -11303,10 +11569,11 @@ function actionGoBack() {
     Background.height = this.world.height;
 
     //Display game title (NEEDS STYLING**)
-    var text = this.add.text(this.world.centerX * 0.65, this.world.centerY / 4, "Arithmetic Monkeys", { font: "60px Arial",
+    var text = this.add.text(this.world.centerX, this.world.centerY / 4, "Arithmetic Monkeys", { font: "60px jungle_font",
       fontWeight: "bold",
       fill: "#FFD700",
       boundsAlignH: "right" });
+    text.anchor.setTo(0.5, 0.5);
 
     //Display start button to enter game selection
     this.Start_Button = this.add.button(this.world.centerX, this.world.centerY + this.world.centerY / 4, 'Button', actionOnClick, this);
@@ -11328,7 +11595,7 @@ function actionOnClick() {
 }
 
 /***/ }),
-/* 348 */
+/* 351 */
 /*!*************************************!*\
   !*** ./src/states/MusicSettings.js ***!
   \*************************************/
@@ -11339,7 +11606,7 @@ function actionOnClick() {
 
 
 /***/ }),
-/* 349 */
+/* 352 */
 /*!***************************************!*\
   !*** ./src/states/Fact_Difficulty.js ***!
   \***************************************/
@@ -11419,7 +11686,7 @@ function actionOnClickDiv() {
 }
 
 /***/ }),
-/* 350 */
+/* 353 */
 /*!***************************************!*\
   !*** ./src/states/Mult_Difficulty.js ***!
   \***************************************/
@@ -11499,7 +11766,7 @@ function actionOnClickDiv() {
 }
 
 /***/ }),
-/* 351 */
+/* 354 */
 /*!**************************************!*\
   !*** ./src/states/Div_Difficulty.js ***!
   \**************************************/
