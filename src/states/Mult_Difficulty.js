@@ -63,10 +63,20 @@ function actionOnClickFact() {
 
 //Function called on button to begin MULTIPLICATION game with difficulty 2 (Locked)
 function actionOnClickMult() {
-    console.log("Difficulty 2 Locked")
+    if(this.game.global.unlockMulti2 == false){
+         console.log("Difficulty 2 Locked")
+    }
+    else{
+      this.state.start('Game_Multiplication')
+    }
 }
 
 //Function called on button to begin MULTIPLICATION game with difficulty 3 (Locked)
 function actionOnClickDiv() {
-    console.log("Difficulty 3 Locked")
+    if(this.game.global.unlockMulti3 == false){
+         console.log("Difficulty 3 Locked")
+    }
+    else{
+        this.state.start('Game_Multiplication')
+    }
 }

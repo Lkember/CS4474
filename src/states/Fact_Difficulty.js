@@ -63,10 +63,20 @@ function actionOnClickFact() {
 
 //Function called on button to begin FACTORING game with difficulty 2 (Locked)
 function actionOnClickMult() {
-    console.log("Difficulty 2 Locked")
+   if(this.game.global.unlockFactor2 == false){
+         console.log("Difficulty 2 Locked")
+    }
+    else{
+        this.state.start('Game_Factoring')
+    }
 }
 
 //Function called on button to begin FACTORING game with difficulty 3 (Locked)
 function actionOnClickDiv() {
-    console.log("Difficulty 3 Locked")
+    if(this.game.global.unlockFactor3 == false){
+         console.log("Difficulty 3 Locked")
+    }
+    else{
+       this.state.start('Game_Factoring')
+    }
 }
