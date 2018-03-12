@@ -16,29 +16,39 @@ export default class extends Phaser.State {
         this.load.image('Arrow', '../../assets/images/arrow_blue.png')
         this.load.image('menu', '../../assets/images/pause-b.png')
         this.load.image('Pause', '../../assets/images/pause_blue.png')
-        this.load.spritesheet("IceBlock", "../../assets/images/Snow-Block-num-101.png", 100, 121);
+        this.load.image("IceBlock", "../../assets/images/Snow-Block-100.png")
     }
 
     create () {
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
-        this.image = this.add.image(0, 0, 'Ice')
+        this.background = this.add.image(0, 0, 'Ice')
 
         //Creation of arrow button to exit state and return to game selection
-        this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
+        this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
+        this.Back_Arrow.anchor.setTo(0.5, 0.5)
 
         //----------------------------------------------ICE BLOCKS COMPONENT---------------------------------------------
         //Need to add a check to see what level was selected
         //Adding the iceblocks onto the game
-        var image = this.add.sprite(game.world.centerX, game.world.centerY, "IceBlock");
+        this.group  = this.add.group()
+
+        this.group.createMultiple(20,"IceBlock",[0],true)
+
+        this.group.align(5, -1, 150, 150)
+
+        this.group.x = 100
+        this.group.y = 200
+
+        //var image = this.add.sprite(game.world.centerX, game.world.centerY, "IceBlock");
 
         //  Moves the image anchor to the middle, so it centers inside the game properly
-        image.anchor.set(0.5);
+        //image.anchor.set(0.5);
 
         //  Enables all kind of input actions on this image (click, etc)
-        image.inputEnabled = true;
-        this.text = this.add.text(250, 16, '', { fill: '#ffffff' });
-        image.events.onInputDown.add(listener, this);
+        //image.inputEnabled = true;
+        //this.text = this.add.text(250, 16, '', { fill: '#ffffff' });
+        //image.events.onInputDown.add(listener, this);
 
         //----------------------------------------------LOGIC COMPONENT---------------------------------------------
             
@@ -101,6 +111,28 @@ export default class extends Phaser.State {
                 }
             }
         };
+    }
+
+    update(){
+                //Back arrow scale on hover
+                if (this.Back_Arrow.input.pointerOver())
+                {
+                    this.Back_Arrow.scale.setTo(1.1,1.1)
+                }
+                else
+                {
+                    this.Back_Arrow.scale.setTo(1,1)
+                }
+        
+                //Pause button scale on hover
+                if (this.pause_label.input.pointerOver())
+                {
+                    this.pause_label.scale.setTo(1.1,1.1)
+                }
+                    else
+                {
+                    this.pause_label.scale.setTo(1,1)
+                }
     }
 }
 

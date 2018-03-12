@@ -6,6 +6,8 @@
  */
 import Phaser from 'phaser'
 import { stringify } from 'querystring';
+import globals from './globals/index'
+import { clone } from 'lodash'
 
 var Queue_Num = 0;
 
