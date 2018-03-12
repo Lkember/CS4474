@@ -5,7 +5,6 @@
  * Language: ES6
  */
 import Phaser from 'phaser'
-//import Queue from './logic/Queue.js'
 
 export default class extends Phaser.State {
     init() { 
@@ -46,7 +45,6 @@ export default class extends Phaser.State {
         this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
 
         //---------------------------------------------FACTOR LOGIC COMPONENT------------------------------------
-
         // creating an array to store the non-prime numbers 
         var correct = true // need a check to check if the user has answered correctly, then switch to a new number
         var selLevel = 12 // need to figure out how to move this into file
@@ -82,7 +80,7 @@ export default class extends Phaser.State {
         var queue = new Queue()  //stores answers into a queue that can be enqueued or dequeued easily
         for(var i = 0; i < randomized.length; i++){
             queue.enqueue(randomized[i])
-            console.log(randomized[i])
+            console.log("Randomized Banana numbers: " + randomized[i])
         }
 
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
@@ -90,13 +88,11 @@ export default class extends Phaser.State {
         this.Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana')
         this.Banana.inputEnabled = true;
         this.physics.enable(this.Banana, Phaser.Physics.ARCADE)
-
         // Set gravity and make sure banana is reset once it leaves world bounds or is killed
         this.Banana.body.gravity.y = 50
         this.Banana.checkWorldBounds = true;
-        this.Banana.events.onOutOfBounds.add(banana_out(queue), this)
-        this.Banana.events.onKilled.add(banana_out(queue), this)   //Code Line for testing collision//
-        
+        this.Banana.events.onOutOfBounds.add(banana_out, this)
+        this.Banana.events.onKilled.add(banana_out, this)   //Code Line for testing collision//
         var j = 0
         var value = answers[j]
         //Add text component to display factors on falling bananas
@@ -313,7 +309,7 @@ function actionGoBack () {
 }
 
 //Function to reset banana position once it leaves world boundary
-function banana_out(Banana){
+function banana_out(){
     this.Banana.reset(this.rnd.integerInRange(0,game.width), 0)
 }
 

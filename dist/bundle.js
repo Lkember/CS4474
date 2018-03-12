@@ -10966,7 +10966,6 @@ function actionOnClickDiv() {
  * Language: ES6
  */
 
-//import Queue from './logic/Queue.js'
 
 /* harmony default export */ __webpack_exports__["a"] = (class extends __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.State {
     init() {}
@@ -11005,7 +11004,6 @@ function actionOnClickDiv() {
         this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
 
         //---------------------------------------------FACTOR LOGIC COMPONENT------------------------------------
-
         // creating an array to store the non-prime numbers 
         var correct = true; // need a check to check if the user has answered correctly, then switch to a new number
         var selLevel = 12; // need to figure out how to move this into file
@@ -11041,7 +11039,7 @@ function actionOnClickDiv() {
         var queue = new Queue(); //stores answers into a queue that can be enqueued or dequeued easily
         for (var i = 0; i < randomized.length; i++) {
             queue.enqueue(randomized[i]);
-            console.log(randomized[i]);
+            console.log("Randomized Banana numbers: " + randomized[i]);
         }
 
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
@@ -11049,12 +11047,12 @@ function actionOnClickDiv() {
         this.Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana');
         this.Banana.inputEnabled = true;
         this.physics.enable(this.Banana, __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Physics.ARCADE);
-
+        console.log("Failing Here1");
         // Set gravity and make sure banana is reset once it leaves world bounds or is killed
         this.Banana.body.gravity.y = 50;
         this.Banana.checkWorldBounds = true;
-        this.Banana.events.onOutOfBounds.add(banana_out(queue), this);
-        this.Banana.events.onKilled.add(banana_out(queue), this); //Code Line for testing collision//
+        this.Banana.events.onOutOfBounds.add(banana_out, this);
+        this.Banana.events.onKilled.add(banana_out, this); //Code Line for testing collision//
         var j = 0;
         var value = answers[j];
         //Add text component to display factors on falling bananas
@@ -11065,6 +11063,7 @@ function actionOnClickDiv() {
             boundsAlignV: "bottom" });
         this.Banana.addChild(text);
 
+        console.log("Failing Here3");
         //----------------------------------------------PLAYER CONTROLS------------------------------------------
         //Map D key to move monkey to the right
         this.key_D = this.input.keyboard.addKey(__WEBPACK_IMPORTED_MODULE_0_phaser___default.a.Keyboard.D);
@@ -11268,7 +11267,7 @@ function actionGoBack() {
 }
 
 //Function to reset banana position once it leaves world boundary
-function banana_out(Banana) {
+function banana_out() {
     this.Banana.reset(this.rnd.integerInRange(0, game.width), 0);
 }
 
