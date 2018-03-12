@@ -18,6 +18,7 @@ export default class extends Phaser.State {
     preload() {
         this.load.image('Jungle', '../../assets/images/background_jungle.jpg')
         this.load.image('Banana', '../../assets/images/banana_small.png')
+        this.load.image('ProfMonkey', '../../assets/images/prof-monkey.png')
         this.load.image('Arrow', '../../assets/images/arrow_yellow.png')
         this.load.image('Pause', '../../assets/images/pause_yellow.png')
         this.load.image('menu', '../../assets/images/pause-b.png')
@@ -32,6 +33,10 @@ export default class extends Phaser.State {
 
         //Apply ARCADE physics for all game components in this state
         this.physics.startSystem(Phaser.Physics.ARCADE)
+
+        //Add the professor monkey
+        var profMonkey = this.add.image(0, this.world.centerY * 0.2, 'ProfMonkey')
+        profMonkey.inputEnabled = true;
 
         //Reference Monkey sprite sheet as image of game and bring into the scene and animate
         this.UserMonkey = this.add.sprite(this.world.centerX, this.world._height, 'Monkey')
