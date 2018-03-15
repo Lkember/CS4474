@@ -17,6 +17,7 @@ export default class extends Phaser.State {
         this.load.image('menu', '../../assets/images/pause-b.png')
         this.load.image('Pause', '../../assets/images/pause_blue.png')
         this.load.image("IceBlock", "../../assets/images/Snow-Block-100.png")
+        this.load.image('IceBlockBroken', '../../assets/images/Snow-Block-num-100.png')
     }
 
     create () {
@@ -40,19 +41,30 @@ export default class extends Phaser.State {
         this.group.x = 100
         this.group.y = 200
 
-        //var image = this.add.sprite(game.world.centerX, game.world.centerY, "IceBlock");
+        //----------------------------------------------LOGIC COMPONENT---------------------------------------------
+        //Set the default Arrays for the certain level
+        var numberSetToPopulate = levelSelect(this.game.global.level)
 
-        //  Moves the image anchor to the middle, so it centers inside the game properly
-        //image.anchor.set(0.5);
+        //Because the above array is already randomized, you can pick the first 20 elements to be displayed
+        // loop through to fill the children ice blocks with text
+        for(var i = 0; i < 20; i++){
+            var text = this.add.text(35, 40, numberSetToPopulate[i], { fill: '#ffffff' });
+            text.visible = false
+            this.group.children[i].addChild(text)
+            this.group.children[i].value = numberSetToPopulate[i]
+            this.group.children[i].inputEnabled = true
+            //this.group.children[i].useHandCursor = true
+            this.group.children[i].events.onInputDown.add(listener, this);
+        }
 
-        //  Enables all kind of input actions on this image (click, etc)
-        //image.inputEnabled = true;
-        //this.text = this.add.text(250, 16, '', { fill: '#ffffff' });
+        // remember to hide the sprite once its selected and the answer given was correct
+        
         //image.events.onInputDown.add(listener, this);
 
-        //----------------------------------------------LOGIC COMPONENT---------------------------------------------
-            
-
+        //Check if the selected ice blocks multiply to be the right value
+        var counter = 0
+        // 1. if selected, populate the right side section
+        // 2. once counter is two, calculate the product, then compare with user input
 
 
         //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
@@ -141,7 +153,76 @@ function actionGoBack () {
     this.state.start('GameSelect')
 }
 
-function listener () {
-    this.text.text = "You clicked " + this.game.global.counter + " times!"
-    this.game.global.counter++
+function listener (sprite) {
+    console.log("The image is clicked!")
+    sprite.loadTexture('IceBlockBroken',0,false)
+    // get the value of the sprite that is clicked on: console.log(sprite.value)
+    sprite.text.visible = true
+}
+
+function levelSelect(level){
+    var array = []
+    var max = 0
+    var counter = 1
+    // level 1 = 6x6 max
+    if(level == 1){
+        console.log("level 1 was selected")
+        max = 6
+        for(var i = 0; i < 20; i++){
+            if(counter > max){
+                counter = 1
+            }
+            array[i] = counter
+            //console.log("This is the value of the array element: " + i + "This is the value: " + array[i])
+            counter++
+        }
+    }
+    // level 2 = 8x8 max
+    else if(level == 2){
+        console.log("level 2 was selected")
+        max = 8
+        for(var i = 0; i < 20; i++){
+            if(counter > max){
+                counter = 1
+            }
+            array[i] = counter
+            //console.log("This is the value of the array2 element: " + i + "This is the value: " + array[i])
+            counter++
+        }
+
+    }
+    // level 3 = 12x12 max
+    else{
+        console.log("level 3 was selected")
+        max = 12
+        for(var i = 0; i < 20; i++){
+            if(counter > max){
+                counter = 1
+            }
+            array[i] = counter
+            //console.log("This is the value of the array3 element: " + i + "This is the value: " + array[i])
+            counter++
+        }
+    }
+    return shuffle(array)
+}
+// shuffle array to give randomness
+function shuffle(array) {
+    let counter = array.length;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        let temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
 }
