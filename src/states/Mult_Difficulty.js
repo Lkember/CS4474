@@ -14,7 +14,9 @@ export default class extends Phaser.State {
     preload() {
         this.load.image('Background', '../../assets/images/background_menu.png')
         this.load.image('Arrow', '../../assets/images/arrow_blue.png')
-        this.load.image('Diff_1', '../../assets/images/mult_dif_1.png')
+        this.load.image('unlock', '../../assets/images/mult_dif_1.png')
+        this.load.image('unlock2', '../../assets/images/mult_dif_2.png')
+        this.load.image('unlock3', '../../assets/images/mult_dif_3.png')
         this.load.image('Diff_2', '../../assets/images/button_locked.png')
         this.load.image('Diff_3', '../../assets/images/button_locked.png')
     }
@@ -37,9 +39,19 @@ export default class extends Phaser.State {
                 boundsAlignH:"right"})
 
         //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
-        this.Diff_1_Button = this.add.button(this.world.centerX , this.world.centerY, 'Diff_1', actionOnClickFact, this)
-        this.Diff_2_Button = this.add.button(this.world.centerX , this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this)
-        this.Diff_3_Button = this.add.button(this.world.centerX , this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this)
+        this.Diff_1_Button = this.add.button(this.world.centerX , this.world.centerY, 'unlock', actionOnClickFact, this)
+        if(this.game.global.unlockMulti2 == true){
+            this.Diff_2_Button = this.add.button(this.world.centerX , this.world.centerY * 1.3, 'unlock2', actionOnClickMult, this)
+        }
+        else{
+            this.Diff_2_Button = this.add.button(this.world.centerX , this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this)
+        }
+        if(this.game.global.unlockMulti3 == true){
+            this.Diff_3_Button = this.add.button(this.world.centerX , this.world.centerY * 1.6, 'unlock3', actionOnClickDiv, this)
+        }
+        else{
+            this.Diff_3_Button = this.add.button(this.world.centerX , this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this)
+        }
 
         this.Diff_1_Button.anchor.setTo(0.5, 0.5)
         this.Diff_2_Button.anchor.setTo(0.5, 0.5)
@@ -56,12 +68,25 @@ export default class extends Phaser.State {
         {
             this.Diff_1_Button.scale.setTo(1,1)
         }
+        if(this.game.global.unlockMulti2 == true && this.Diff_2_Button.input.pointerOver()){
+            this.Diff_2_Button.scale.setTo(1.1,1.1)
+        }
+        else{
+            this.Diff_2_Button.scale.setTo(1,1)
+        }
+        if(this.game.global.unlockMulti3 == true && this.Diff_3_Button.input.pointerOver()){
+            this.Diff_3_Button.scale.setTo(1.1,1.1)
+        }
+        else{
+            this.Diff_3_Button.scale.setTo(1,1)
+        }
     }
 
 }
 
 //Function called on button to begin MULTIPLICATION game with difficulty 1
 function actionOnClickFact() {
+    this.game.global.multiLevel = 1
     this.state.start('Game_Multiplication')
 }
 
@@ -71,6 +96,7 @@ function actionOnClickMult() {
          console.log("Difficulty 2 Locked")
     }
     else{
+      this.game.global.multiLevel = 2
       this.state.start('Game_Multiplication')
     }
 }
@@ -81,6 +107,7 @@ function actionOnClickDiv() {
          console.log("Difficulty 3 Locked")
     }
     else{
+        this.game.global.multiLevel = 3
         this.state.start('Game_Multiplication')
     }
 }
