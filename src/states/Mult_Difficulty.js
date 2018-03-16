@@ -13,6 +13,7 @@ export default class extends Phaser.State {
     //Load scene assets to display
     preload() {
         this.load.image('Background', '../../assets/images/background_menu.png')
+        this.load.image('Arrow', '../../assets/images/arrow_blue.png')
         this.load.image('Diff_1', '../../assets/images/mult_dif_1.png')
         this.load.image('Diff_2', '../../assets/images/button_locked.png')
         this.load.image('Diff_3', '../../assets/images/button_locked.png')
@@ -24,6 +25,9 @@ export default class extends Phaser.State {
         var Background = this.add.image(0, 0, 'Background')
         Background.width = this.world.width
         Background.height = this.world.height
+
+        this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
+        this.Back_Arrow.anchor.setTo(0.5, 0.5)
 
         //Text instruction for user to select a difficulty(NEEDS STYLING*)
         var text = this.add.text(this.world.centerX * 0.65,this.world.centerY/4,"Select A Difficulty",
@@ -79,4 +83,9 @@ function actionOnClickDiv() {
     else{
         this.state.start('Game_Multiplication')
     }
+}
+
+//Function called on ARROW button to return to 'GameSelect' screen
+function actionGoBack () {
+    this.state.start('GameSelect')
 }
