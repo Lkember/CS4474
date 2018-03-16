@@ -18,12 +18,19 @@ export default class extends Phaser.State {
         this.load.image('Pause', '../../assets/images/pause_blue.png')
         this.load.image("IceBlock", "../../assets/images/Snow-Block-100.png")
         this.load.image('IceBlockBroken', '../../assets/images/Snow-Block-num-100.png')
+        this.load.image("Monkey", "../../assets/images/user-monkey-big-snow.png")
     }
 
     create () {
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
         this.background = this.add.image(0, 0, 'Ice')
+        
+        this.sprite.anchor
+
+        //Adding the monkey onto the background
+        this.monkey = this.add.sprite(this.world.centerX * 1.5, 560, 'Monkey')
+        this.monkey.scale.setTo(0.5,0.5)
 
         //Creation of arrow button to exit state and return to game selection
         this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
@@ -57,7 +64,7 @@ export default class extends Phaser.State {
             this.group.children[i].events.onInputDown.add(listener, this);
         }
 
-        // remember to hide the sprite once its selected and the answer given was correct
+        // remember to hide the sprite once its selected + if the answer given was correct
         
         //image.events.onInputDown.add(listener, this);
 
@@ -155,9 +162,12 @@ function actionGoBack () {
 
 function listener (sprite) {
     console.log("The image is clicked!")
+    //
+    //   NEED TO LIMIT THE AMOUNT OF TIMES THEY CAN CLICK TO 2
+    // 
     sprite.loadTexture('IceBlockBroken',0,false)
     // get the value of the sprite that is clicked on: console.log(sprite.value)
-    sprite.text.visible = true
+    //sprite.text.visible = true
 }
 
 function levelSelect(level){
