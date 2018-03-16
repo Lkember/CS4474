@@ -25,8 +25,6 @@ export default class extends Phaser.State {
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
         this.background = this.add.image(0, 0, 'Ice')
-        
-        this.sprite.anchor
 
         //Adding the monkey onto the background
         this.monkey = this.add.sprite(this.world.centerX * 1.5, 560, 'Monkey')
