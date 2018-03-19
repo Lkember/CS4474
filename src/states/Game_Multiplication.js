@@ -57,7 +57,7 @@ export default class extends Phaser.State {
 
         //----------------------------------------------LOGIC COMPONENT---------------------------------------------
         //Set the default Arrays for the certain level
-        var numberSetToPopulate = levelSelect(this.game.global.level)
+        var numberSetToPopulate = levelSelect(this.game.global.multiLevel)
         this.currentPair = false
         
         //Because the above array is already randomized, you can pick the first 20 elements to be displayed
