@@ -20,8 +20,8 @@ export default class extends Phaser.State {
       //-------------------------------------------MENU MUSIC COMPONENT---------------------------------------
       //Play audio file and loop
       var music = this.game.add.audio('test')
-      music.play();
-      music.loop = true;
+      //music.play();
+      //music.loop = true;
 
       //----------------------------------------------UI COMPONENT---------------------------------------------
       //Set menu background and scale to display

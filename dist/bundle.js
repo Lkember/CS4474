@@ -4268,8 +4268,15 @@ module.exports = Math.scale || function scale(x, inLow, inHigh, outLow, outHigh)
 "use strict";
 /* harmony default export */ __webpack_exports__["a"] = ({
 	Que_Num: 0,
-	level: 1,
-	counter: 0
+	multiLevel: 1,
+	divLevel: 1,
+	factLevel: 1,
+	unlockMulti2: false,
+	unlockMulti3: false,
+	unlockFactor2: false,
+	unlockFactor3: false,
+	unlockDiv2: false,
+	unlockDiv3: false
 });
 
 /***/ }),
@@ -28634,6 +28641,14 @@ var objectKeys = Object.keys || function (obj) {
  */
 
 
+var mult_1 = 0;
+var mult_2 = 0;
+var answer = 0;
+var firstOp;
+var secondOp;
+var answerOp;
+var text;
+
 /* harmony default export */ __webpack_exports__["a"] = (class extends __WEBPACK_IMPORTED_MODULE_0_phaser___default.a.State {
     init() {}
 
@@ -28644,12 +28659,18 @@ var objectKeys = Object.keys || function (obj) {
         this.load.image('menu', '../../assets/images/pause-b.png');
         this.load.image('Pause', '../../assets/images/pause_blue.png');
         this.load.image("IceBlock", "../../assets/images/Snow-Block-100.png");
+        this.load.image('IceBlockBroken', '../../assets/images/Snow-Block-num-100.png');
+        this.load.image("Monkey", "../../assets/images/user-monkey-big-snow.png");
     }
 
     create() {
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
         this.background = this.add.image(0, 0, 'Ice');
+
+        //Adding the monkey onto the background
+        this.monkey = this.add.sprite(this.world.centerX * 1.5, 560, 'Monkey');
+        this.monkey.scale.setTo(0.5, 0.5);
 
         //Creation of arrow button to exit state and return to game selection
         this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
@@ -28667,17 +28688,50 @@ var objectKeys = Object.keys || function (obj) {
         this.group.x = 100;
         this.group.y = 200;
 
-        //var image = this.add.sprite(game.world.centerX, game.world.centerY, "IceBlock");
+        //----------------------------------------------LOGIC COMPONENT---------------------------------------------
+        //Set the default Arrays for the certain level
+        var numberSetToPopulate = levelSelect(this.game.global.level);
+        this.currentPair = false;
 
-        //  Moves the image anchor to the middle, so it centers inside the game properly
-        //image.anchor.set(0.5);
+        //Because the above array is already randomized, you can pick the first 20 elements to be displayed
+        // loop through to fill the children ice blocks with text
+        for (var i = 0; i < 20; i++) {
+            text = this.add.text(35, 40, numberSetToPopulate[i], { fontSize: "30px", fill: '#000000' });
+            text.visible = true;
+            this.group.children[i].addChild(text);
+            this.group.children[i].value = numberSetToPopulate[i];
+            console.log("Group member value: " + this.group.children[i].value);
+            this.group.children[i].inputEnabled = true;
+            var temp = this.group.children[i].value;
 
-        //  Enables all kind of input actions on this image (click, etc)
-        //image.inputEnabled = true;
-        //this.text = this.add.text(250, 16, '', { fill: '#ffffff' });
+            //this.group.children[i].useHandCursor = true
+            this.group.children[i].events.onInputDown.add(listener, this);
+            this.group.children[i].events.onInputDown.add(function () {
+                multSet(temp);
+            }, this);
+            console.log(mult_1);
+            console.log(mult_2);
+        }
+
+        for (var i = 0; i < 20; i++) {
+            console.log("Value for child " + i + " : " + this.group.children[i].value);
+        }
+
+        //Display equation onscreen **{Is Updated under update()}**
+        firstOp = this.add.text(this.world.centerX * 1.3, this.world.centerY * 0.8, mult_1, { fontSize: "100px", fill: "#000000" });
+        this.add.text(this.world.centerX * 1.4, this.world.centerY * 0.8, "X", { fontSize: "100px", fill: "#000000" });
+        secondOp = this.add.text(this.world.centerX * 1.5, this.world.centerY * 0.8, mult_2, { fontSize: "100px", fill: "#000000" });
+        this.add.text(this.world.centerX * 1.6, this.world.centerY * 0.8, "=", { fontSize: "100px", fill: "#000000" });
+        answerOp = this.add.text(this.world.centerX * 1.7, this.world.centerY * 0.8, answer, { fontSize: "100px", fill: "#000000" });
+
+        // remember to hide the sprite once its selected + if the answer given was correct
+
         //image.events.onInputDown.add(listener, this);
 
-        //----------------------------------------------LOGIC COMPONENT---------------------------------------------
+        //Check if the selected ice blocks multiply to be the right value
+        var counter = 0;
+        // 1. if selected, populate the right side section
+        // 2. once counter is two, calculate the product, then compare with user input
 
 
         //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
@@ -28741,6 +28795,23 @@ var objectKeys = Object.keys || function (obj) {
     }
 
     update() {
+
+        if (mult_1 == 0 && mult_2 == 0) {
+            firstOp.visible = false;
+            secondOp.visible = false;
+            answerOp.visible = false;
+        } else {
+            firstOp.visible = true;
+            secondOp.visible = true;
+            answerOp.visible = true;
+        }
+        //Updates product view with newest variables
+        firstOp.setText(mult_1);
+        secondOp.setText(mult_2);
+
+        answer = mult_1 * mult_2;
+        answerOp.setText(answer);
+
         //Back arrow scale on hover
         if (this.Back_Arrow.input.pointerOver()) {
             this.Back_Arrow.scale.setTo(1.1, 1.1);
@@ -28755,16 +28826,102 @@ var objectKeys = Object.keys || function (obj) {
             this.pause_label.scale.setTo(1, 1);
         }
     }
+
 });
 
 //Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack() {
     this.state.start('GameSelect');
+    mult_1 = 0;
+    mult_2 = 0;
 }
 
-function listener() {
-    this.text.text = "You clicked " + this.game.global.counter + " times!";
-    this.game.global.counter++;
+//Setting variable from current sprite clicked
+function multSet(value) {
+    //this.currentPair = true
+    if (mult_1 == 0) {
+        mult_1 = value;
+    } else mult_2 = value;
+
+    console.log("Mult1 = " + mult_1);
+    console.log("Mult2 = " + mult_2);
+}
+
+function listener(sprite) {
+    console.log("The image is clicked!");
+    //
+    //   NEED TO LIMIT THE AMOUNT OF TIMES THEY CAN CLICK TO 2
+    // 
+    sprite.loadTexture('IceBlockBroken', 0, false);
+
+    // get the value of the sprite that is clicked on: console.log(sprite.value)
+    //sprite.text.visible = true
+}
+
+function levelSelect(level) {
+    var array = [];
+    var max = 0;
+    var counter = 1;
+    // level 1 = 6x6 max
+    if (level == 1) {
+        console.log("level 1 was selected");
+        max = 6;
+        for (var i = 0; i < 20; i++) {
+            if (counter > max) {
+                counter = 1;
+            }
+            array[i] = counter;
+            //console.log("This is the value of the array element: " + i + "This is the value: " + array[i])
+            counter++;
+        }
+    }
+    // level 2 = 8x8 max
+    else if (level == 2) {
+            console.log("level 2 was selected");
+            max = 8;
+            for (var i = 0; i < 20; i++) {
+                if (counter > max) {
+                    counter = 1;
+                }
+                array[i] = counter;
+                //console.log("This is the value of the array2 element: " + i + "This is the value: " + array[i])
+                counter++;
+            }
+        }
+        // level 3 = 12x12 max
+        else {
+                console.log("level 3 was selected");
+                max = 12;
+                for (var i = 0; i < 20; i++) {
+                    if (counter > max) {
+                        counter = 1;
+                    }
+                    array[i] = counter;
+                    //console.log("This is the value of the array3 element: " + i + "This is the value: " + array[i])
+                    counter++;
+                }
+            }
+    return shuffle(array);
+}
+// shuffle array to give randomness
+function shuffle(array) {
+    let counter = array.length;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        let temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
 }
 
 /***/ }),
@@ -28922,8 +29079,8 @@ function actionGoBack() {
     //-------------------------------------------MENU MUSIC COMPONENT---------------------------------------
     //Play audio file and loop
     var music = this.game.add.audio('test');
-    music.play();
-    music.loop = true;
+    //music.play();
+    //music.loop = true;
 
     //----------------------------------------------UI COMPONENT---------------------------------------------
     //Set menu background and scale to display
@@ -28994,9 +29151,12 @@ function actionOnClick() {
     //Load scene assets to display
     preload() {
         this.load.image('Background', '../../assets/images/background_menu.png');
-        this.load.image('Diff_1', '../../assets/images/fact_dif_1.png');
+        this.load.image('unlock', '../../assets/images/fact_dif_1.png');
+        this.load.image('unlock2', '../../assets/images/fact_dif_2.png');
+        this.load.image('unlock3', '../../assets/images/fact_dif_3.png');
         this.load.image('Diff_2', '../../assets/images/button_locked.png');
         this.load.image('Diff_3', '../../assets/images/button_locked.png');
+        this.load.image('Arrow', '../../assets/images/arrow_yellow.png');
     }
 
     create() {
@@ -29006,6 +29166,10 @@ function actionOnClick() {
         Background.width = this.world.width;
         Background.height = this.world.height;
 
+        //Creation of arrow button to exit state and return to game selection
+        this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
+        this.Back_Arrow.anchor.setTo(0.5, 0.5);
+
         //Text instruction for user to select a difficulty(NEEDS STYLING*)
         var text = this.add.text(this.world.centerX * 0.65, this.world.centerY / 4, "Select A Difficulty", { font: "60px Arial",
             fontWeight: "bold",
@@ -29013,9 +29177,17 @@ function actionOnClick() {
             boundsAlignH: "right" });
 
         //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
-        this.Diff_1_Button = this.add.button(this.world.centerX, this.world.centerY, 'Diff_1', actionOnClickFact, this);
-        this.Diff_2_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
-        this.Diff_3_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
+        this.Diff_1_Button = this.add.button(this.world.centerX, this.world.centerY, 'unlock', actionOnClickFact, this);
+        if (this.game.global.unlockFactor2 == true) {
+            this.Diff_2_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'unlock2', actionOnClickMult, this);
+        } else {
+            this.Diff_2_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
+        }
+        if (this.game.global.unlockFactor3 == true) {
+            this.Diff_3_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'unlock3', actionOnClickDiv, this);
+        } else {
+            this.Diff_3_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
+        }
 
         this.Diff_1_Button.anchor.setTo(0.5, 0.5);
         this.Diff_2_Button.anchor.setTo(0.5, 0.5);
@@ -29029,23 +29201,49 @@ function actionOnClick() {
         } else {
             this.Diff_1_Button.scale.setTo(1, 1);
         }
+        if (this.game.global.unlockFactor2 == true && this.Diff_2_Button.input.pointerOver()) {
+            this.Diff_2_Button.scale.setTo(1.1, 1.1);
+        } else {
+            this.Diff_2_Button.scale.setTo(1, 1);
+        }
+        if (this.game.global.unlockFactor3 == true && this.Diff_3_Button.input.pointerOver()) {
+            this.Diff_3_Button.scale.setTo(1.1, 1.1);
+        } else {
+            this.Diff_3_Button.scale.setTo(1, 1);
+        }
     }
 
 });
 
 //Function called on button to begin FACTORING game with difficulty 1
 function actionOnClickFact() {
+    this.game.global.factLevel = 1;
     this.state.start('Game_Factoring');
 }
 
 //Function called on button to begin FACTORING game with difficulty 2 (Locked)
 function actionOnClickMult() {
-    console.log("Difficulty 2 Locked");
+    if (this.game.global.unlockFactor2 == false) {
+        console.log("Difficulty 2 Locked");
+    } else {
+        this.game.global.factLevel = 2;
+        this.state.start('Game_Factoring');
+    }
 }
 
 //Function called on button to begin FACTORING game with difficulty 3 (Locked)
 function actionOnClickDiv() {
-    console.log("Difficulty 3 Locked");
+    if (this.game.global.unlockFactor3 == false) {
+        console.log("Difficulty 3 Locked");
+    } else {
+        this.game.global.factLevel = 3;
+        this.state.start('Game_Factoring');
+    }
+}
+
+//Function called on ARROW button to return to 'GameSelect' screen
+function actionGoBack() {
+    this.state.start('GameSelect');
 }
 
 /***/ }),
@@ -29074,7 +29272,10 @@ function actionOnClickDiv() {
     //Load scene assets to display
     preload() {
         this.load.image('Background', '../../assets/images/background_menu.png');
-        this.load.image('Diff_1', '../../assets/images/mult_dif_1.png');
+        this.load.image('Arrow', '../../assets/images/arrow_blue.png');
+        this.load.image('unlock', '../../assets/images/mult_dif_1.png');
+        this.load.image('unlock2', '../../assets/images/mult_dif_2.png');
+        this.load.image('unlock3', '../../assets/images/mult_dif_3.png');
         this.load.image('Diff_2', '../../assets/images/button_locked.png');
         this.load.image('Diff_3', '../../assets/images/button_locked.png');
     }
@@ -29086,6 +29287,9 @@ function actionOnClickDiv() {
         Background.width = this.world.width;
         Background.height = this.world.height;
 
+        this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
+        this.Back_Arrow.anchor.setTo(0.5, 0.5);
+
         //Text instruction for user to select a difficulty(NEEDS STYLING*)
         var text = this.add.text(this.world.centerX * 0.65, this.world.centerY / 4, "Select A Difficulty", { font: "60px Arial",
             fontWeight: "bold",
@@ -29093,9 +29297,17 @@ function actionOnClickDiv() {
             boundsAlignH: "right" });
 
         //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
-        this.Diff_1_Button = this.add.button(this.world.centerX, this.world.centerY, 'Diff_1', actionOnClickFact, this);
-        this.Diff_2_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
-        this.Diff_3_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
+        this.Diff_1_Button = this.add.button(this.world.centerX, this.world.centerY, 'unlock', actionOnClickFact, this);
+        if (this.game.global.unlockMulti2 == true) {
+            this.Diff_2_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'unlock2', actionOnClickMult, this);
+        } else {
+            this.Diff_2_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
+        }
+        if (this.game.global.unlockMulti3 == true) {
+            this.Diff_3_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'unlock3', actionOnClickDiv, this);
+        } else {
+            this.Diff_3_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
+        }
 
         this.Diff_1_Button.anchor.setTo(0.5, 0.5);
         this.Diff_2_Button.anchor.setTo(0.5, 0.5);
@@ -29109,23 +29321,49 @@ function actionOnClickDiv() {
         } else {
             this.Diff_1_Button.scale.setTo(1, 1);
         }
+        if (this.game.global.unlockMulti2 == true && this.Diff_2_Button.input.pointerOver()) {
+            this.Diff_2_Button.scale.setTo(1.1, 1.1);
+        } else {
+            this.Diff_2_Button.scale.setTo(1, 1);
+        }
+        if (this.game.global.unlockMulti3 == true && this.Diff_3_Button.input.pointerOver()) {
+            this.Diff_3_Button.scale.setTo(1.1, 1.1);
+        } else {
+            this.Diff_3_Button.scale.setTo(1, 1);
+        }
     }
 
 });
 
 //Function called on button to begin MULTIPLICATION game with difficulty 1
 function actionOnClickFact() {
+    this.game.global.multiLevel = 1;
     this.state.start('Game_Multiplication');
 }
 
 //Function called on button to begin MULTIPLICATION game with difficulty 2 (Locked)
 function actionOnClickMult() {
-    console.log("Difficulty 2 Locked");
+    if (this.game.global.unlockMulti2 == false) {
+        console.log("Difficulty 2 Locked");
+    } else {
+        this.game.global.multiLevel = 2;
+        this.state.start('Game_Multiplication');
+    }
 }
 
 //Function called on button to begin MULTIPLICATION game with difficulty 3 (Locked)
 function actionOnClickDiv() {
-    console.log("Difficulty 3 Locked");
+    if (this.game.global.unlockMulti3 == false) {
+        console.log("Difficulty 3 Locked");
+    } else {
+        this.game.global.multiLevel = 3;
+        this.state.start('Game_Multiplication');
+    }
+}
+
+//Function called on ARROW button to return to 'GameSelect' screen
+function actionGoBack() {
+    this.state.start('GameSelect');
 }
 
 /***/ }),
@@ -29154,9 +29392,12 @@ function actionOnClickDiv() {
     //Load scene assets to display
     preload() {
         this.load.image('Background', '../../assets/images/background_menu.png');
-        this.load.image('Diff_1', '../../assets/images/div_dif_1.png');
+        this.load.image('unlock2', '../../assets/images/div_dif_2.png');
+        this.load.image('unlock3', '../../assets/images/div_dif_3.png');
+        this.load.image('unlock', '../../assets/images/div_dif_1.png');
         this.load.image('Diff_2', '../../assets/images/button_locked.png');
         this.load.image('Diff_3', '../../assets/images/button_locked.png');
+        this.load.image('Arrow', '../../assets/images/arrow_brown.png');
     }
 
     create() {
@@ -29166,6 +29407,9 @@ function actionOnClickDiv() {
         Background.width = this.world.width;
         Background.height = this.world.height;
 
+        this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this);
+        this.Back_Arrow.anchor.setTo(0.5, 0.5);
+
         //Text instruction for user to select a difficulty(NEEDS STYLING*)
         var text = this.add.text(this.world.centerX * 0.65, this.world.centerY / 4, "Select A Difficulty", { font: "60px Arial",
             fontWeight: "bold",
@@ -29173,9 +29417,17 @@ function actionOnClickDiv() {
             boundsAlignH: "right" });
 
         //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
-        this.Diff_1_Button = this.add.button(this.world.centerX, this.world.centerY, 'Diff_1', actionOnClickFact, this);
-        this.Diff_2_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
-        this.Diff_3_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
+        this.Diff_1_Button = this.add.button(this.world.centerX, this.world.centerY, 'unlock', actionOnClickFact, this);
+        if (this.game.global.unlockDiv3 == true) {
+            this.Diff_2_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'unlock2', actionOnClickMult, this);
+        } else {
+            this.Diff_2_Button = this.add.button(this.world.centerX, this.world.centerY * 1.3, 'Diff_2', actionOnClickMult, this);
+        }
+        if (this.game.global.unlockDiv3 == true) {
+            this.Diff_3_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'unlock3', actionOnClickDiv, this);
+        } else {
+            this.Diff_3_Button = this.add.button(this.world.centerX, this.world.centerY * 1.6, 'Diff_3', actionOnClickDiv, this);
+        }
 
         this.Diff_1_Button.anchor.setTo(0.5, 0.5);
         this.Diff_2_Button.anchor.setTo(0.5, 0.5);
@@ -29189,23 +29441,49 @@ function actionOnClickDiv() {
         } else {
             this.Diff_1_Button.scale.setTo(1, 1);
         }
+        if (this.game.global.unlockDiv2 == true && this.Diff_2_Button.input.pointerOver()) {
+            this.Diff_2_Button.scale.setTo(1.1, 1.1);
+        } else {
+            this.Diff_2_Button.scale.setTo(1, 1);
+        }
+        if (this.game.global.unlockDiv3 == true && this.Diff_3_Button.input.pointerOver()) {
+            this.Diff_3_Button.scale.setTo(1.1, 1.1);
+        } else {
+            this.Diff_3_Button.scale.setTo(1, 1);
+        }
     }
 
 });
 
 //Function called on button to begin DIVISION game with difficulty 1
 function actionOnClickFact() {
+    this.game.global.divLevel = 1;
     this.state.start('Game_Division');
 }
 
 //Function called on button to begin DIVISION game with difficulty 2 (Locked)
 function actionOnClickMult() {
-    console.log("Difficulty 2 Locked");
+    if (this.game.global.unlockDiv2 == false) {
+        console.log("Difficulty 2 Locked");
+    } else {
+        this.game.global.divLevel = 2;
+        this.state.start('Game_Division');
+    }
 }
 
 //Function called on button to begin DIVISION game with difficulty 3 (Locked)
 function actionOnClickDiv() {
-    console.log("Difficulty 3 Locked");
+    if (this.game.global.unlockDiv3 == false) {
+        console.log("Difficulty 3 Locked");
+    } else {
+        this.game.global.divLevel = 3;
+        this.state.start('Game_Division');
+    }
+}
+
+//Function called on ARROW button to return to 'GameSelect' screen
+function actionGoBack() {
+    this.state.start('GameSelect');
 }
 
 /***/ })
