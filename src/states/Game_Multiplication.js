@@ -57,9 +57,8 @@ export default class extends Phaser.State {
 
         //----------------------------------------------LOGIC COMPONENT---------------------------------------------
         //Set the default Arrays for the certain level
-        
         var numberSetToPopulate = levelSelect(this.game.global.level)
-        
+
         //Because the above array is already randomized, you can pick the first 20 elements to be displayed
         // loop through to fill the children ice blocks with text
         for(var i = 0; i < 20; i++){
@@ -76,7 +75,7 @@ export default class extends Phaser.State {
             console.log(mult_1)
             console.log(mult_2)
         }
-        
+
 
 
         for(var i=0; i<20; i++){
@@ -98,7 +97,7 @@ export default class extends Phaser.State {
         answerOp.anchor.setTo(0.5,0.5)
         
 
-        
+
         //Check if the selected ice blocks multiply to be the right value
         var counter = 0
         // 1. if selected, populate the right side section
