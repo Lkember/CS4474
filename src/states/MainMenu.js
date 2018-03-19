@@ -31,7 +31,7 @@ export default class extends Phaser.State {
 
       //Display game title (NEEDS STYLING**)
       var text = this.add.text(this.world.centerX, this.world.centerY/4,"Arithmetic Monkeys",
-          {font: "60px jungle_font",
+          {font: "60px Arial",
            fontWeight: "bold",
            fill: "#FFD700",
            boundsAlignH:"right"})

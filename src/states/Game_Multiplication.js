@@ -6,13 +6,13 @@
  */
 import Phaser from 'phaser'
 
+var currentSet = 0;
 var mult_1 = 0;
 var mult_2 = 0;
 var answer = 0;
 var firstOp;
 var secondOp;
 var answerOp;
-var text;
 
 export default class extends Phaser.State {
     init () {
@@ -57,26 +57,27 @@ export default class extends Phaser.State {
 
         //----------------------------------------------LOGIC COMPONENT---------------------------------------------
         //Set the default Arrays for the certain level
+        
         var numberSetToPopulate = levelSelect(this.game.global.level)
-        this.currentPair = false
         
         //Because the above array is already randomized, you can pick the first 20 elements to be displayed
         // loop through to fill the children ice blocks with text
         for(var i = 0; i < 20; i++){
-            text = this.add.text(35, 40, numberSetToPopulate[i], {fontSize:"30px", fill: '#000000' });
+            var text = this.add.text(35, 40, numberSetToPopulate[i], {fontSize:"30px", fill: '#000000' });
             text.visible = true
             this.group.children[i].addChild(text)
             this.group.children[i].value = numberSetToPopulate[i]
             console.log("Group member value: " + this.group.children[i].value)
             this.group.children[i].inputEnabled = true
             var temp = this.group.children[i].value
-            
-            //this.group.children[i].useHandCursor = true
+
             this.group.children[i].events.onInputDown.add(listener, this);
-            this.group.children[i].events.onInputDown.add((function() { multSet(temp)}),this)
+            this.group.children[i].events.onInputDown.add(multSet, this);
             console.log(mult_1)
             console.log(mult_2)
         }
+        
+
 
         for(var i=0; i<20; i++){
             console.log("Value for child " + i +" : " + this.group.children[i].value)
@@ -85,19 +86,19 @@ export default class extends Phaser.State {
 
         //Display equation onscreen **{Is Updated under update()}**
         firstOp = this.add.text(this.world.centerX * 1.3,this.world.centerY * 0.8, mult_1, {fontSize:"100px", fill:"#000000"});
-        this.add.text(this.world.centerX *1.4,this.world.centerY * 0.8, "X", {fontSize:"100px", fill:"#000000"});
+        var mult_sign = this.add.text(this.world.centerX *1.4,this.world.centerY * 0.8, "X", {fontSize:"80px", fill:"#000000"});
         secondOp = this.add.text(this.world.centerX *1.5,this.world.centerY * 0.8, mult_2, {fontSize:"100px", fill:"#000000"});
-        this.add.text(this.world.centerX * 1.6,this.world.centerY * 0.8, "=", {fontSize:"100px", fill:"#000000"});
-        answerOp = this.add.text(this.world.centerX *1.7,this.world.centerY * 0.8, answer, {fontSize:"100px", fill:"#000000"});
+        var equals = this.add.text(this.world.centerX * 1.6,this.world.centerY * 0.8, "=", {fontSize:"100px", fill:"#000000"});
+        answerOp = this.add.text(this.world.centerX *1.75,this.world.centerY * 0.8, answer, {fontSize:"100px", fill:"#000000"});
+        
+        firstOp.anchor.setTo(0.5,0.5)
+        mult_sign.anchor.setTo(0.5,0.5)
+        secondOp.anchor.setTo(0.5,0.5)
+        equals.anchor.setTo(0.5,0.5)
+        answerOp.anchor.setTo(0.5,0.5)
         
 
         
-
-
-        // remember to hide the sprite once its selected + if the answer given was correct
-        
-        //image.events.onInputDown.add(listener, this);
-
         //Check if the selected ice blocks multiply to be the right value
         var counter = 0
         // 1. if selected, populate the right side section
@@ -209,27 +210,36 @@ function actionGoBack () {
     this.state.start('GameSelect')
     mult_1 = 0
     mult_2 = 0
+    answer = 0
+    currentSet = 0
+
 }
 
 //Setting variable from current sprite clicked
-function multSet(value){
-    //this.currentPair = true
+function multSet(sprite){
     if(mult_1 == 0){
-        mult_1 = value
+        mult_1 = sprite.value
     }
-    else mult_2 = value
+    else mult_2 = sprite.value
  
     console.log("Mult1 = " + mult_1)
     console.log("Mult2 = " + mult_2)
 }
 
+//Function to swap iceblock sprite to broken iceblock on click
 function listener (sprite) {
-    console.log("The image is clicked!")
     //
     //   NEED TO LIMIT THE AMOUNT OF TIMES THEY CAN CLICK TO 2
     // 
-    sprite.loadTexture('IceBlockBroken',0,false)
-
+    if(currentSet < 2){
+        console.log("Current set is less than 2, so the block was broken")
+        sprite.loadTexture('IceBlockBroken',0,false)
+        //sprite.text.visible = true
+        currentSet++
+    }
+    else{
+        console.log("Current set is at max, so the block is not broken")
+    }
     // get the value of the sprite that is clicked on: console.log(sprite.value)
     //sprite.text.visible = true
 }
