@@ -206,7 +206,7 @@ export default class extends Phaser.State {
 
 //Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack () {
-    this.state.start('GameSelect')
+    this.state.start('Mult_dif')
     mult_1 = 0
     mult_2 = 0
     answer = 0

@@ -241,7 +241,7 @@ function collisionHandler(object1, object2){
 
 //Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack () {
-    this.state.start('GameSelect')
+    this.state.start('Fact_dif')
 }
 
 //Function to reset banana position once it leaves world boundary
