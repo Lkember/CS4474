@@ -28225,13 +28225,10 @@ var Queue_Num = 0;
         this.Back_Arrow.anchor.setTo(0.5, 0.5);
 
         //-----------------------------------------------GAME LOGIC----------------------------------------------
-        var easy = [4, 6, 8, 9, 10, 12];
-        var medium = [];
-        var hard = [];
-
+        var level = getLevel(this.game.global.factLevel);
         this.queue = [];
 
-        var number_eq = easy[this.rnd.integerInRange(0, easy.length - 1)];
+        var number_eq = level[this.rnd.integerInRange(0, level.length - 1)];
         console.log("The number to factor: " + number_eq);
         for (var i = 1; i <= number_eq; i++) {
             if (number_eq % i == 0) {
@@ -28378,6 +28375,21 @@ var Queue_Num = 0;
         this.physics.arcade.collide(this.UserMonkey, this.Banana, collisionHandler, null, this);
     }
 });
+
+function getLevel(level) {
+    var array = [];
+    if (level == 1) {
+        console.log("level 1 was selected");
+        array = [4, 6, 8, 9, 10, 12];
+    } else if (level == 2) {
+        console.log("level 2 was selected");
+        array = [14, 15, 16, 18, 20, 21, 22, 24, 25, 26, 27, 28, 30, 32, 33, 34, 35, 36, 38, 39, 40, 42, 44, 45, 46, 48, 49, 50, 51, 52, 54, 55, 56, 57, 58, 60, 62, 63, 64];
+    } else if (level == 3) {
+        console.log("level 3 was selected");
+        array = [65, 66, 68, 69, 70, 72, 74, 75, 76, 77, 78, 80, 81, 82, 84, 85, 86, 87, 88, 90, 91, 92, 93, 94, 95, 96, 98, 99, 100, 102, 104, 105, 106, 108, 110, 111, 112, 114];
+    }
+    return array;
+}
 
 //If objects collide, destroy second object
 function collisionHandler(object1, object2) {
@@ -28690,7 +28702,6 @@ var answerOp;
 
         //----------------------------------------------LOGIC COMPONENT---------------------------------------------
         //Set the default Arrays for the certain level
-
         var numberSetToPopulate = levelSelect(this.game.global.level);
 
         //Because the above array is already randomized, you can pick the first 20 elements to be displayed
