@@ -6,8 +6,8 @@
  * Language: ES6
  */
 import Phaser from 'phaser'
-import globals from './globals/index'
-import { clone } from 'lodash'
+// import globals from './globals/index'
+// import { clone } from 'lodash'
 
 export default class extends Phaser.State {
     init() {
@@ -24,8 +24,8 @@ export default class extends Phaser.State {
     create() {
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Setting the global variables
-        this.game.global = clone(globals)
-        console.log("This is the globals within GameSelect:" + this.game.global.level)
+        //this.game.global = clone(globals)
+        //console.log("This is the globals within GameSelect:" + this.game.global.level)
 
         //Display background and scale to world window
         var Background = this.add.image(0, 0, 'Background')

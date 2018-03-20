@@ -6,6 +6,18 @@
  */
 import Phaser from 'phaser'
 
+var player;
+var aliens;
+var bullets;
+var bulletTime = 0;
+var cursors;
+var fireButton;
+var explosions;
+var enemyBullet;
+var firingTimer = 0;
+var stateText;
+var livingEnemies = [];
+
 export default class extends Phaser.State {
     init () {
     }
@@ -15,6 +27,11 @@ export default class extends Phaser.State {
         this.load.image('Desert', '../../assets/images/background_desert.png')
         this.load.image('Arrow', '../../assets/images/arrow_brown.png')
         this.load.image('Pause', '../../assets/images/pause_brown.png')
+        this.load.image('menu', '../../assets/images/pause-b.png')
+        this.load.image('bullet', '../../assets/images/bullet.png');
+        this.load.spritesheet('invader', '../../assets/images/invader32x32x4.png', 32, 32)
+        this.load.image('ship', '../../assets/images/player.png')
+        this.load.spritesheet('kaboom', '../../assets/images/explode.png', 128, 128)
     }
 
     create () {
@@ -25,7 +42,53 @@ export default class extends Phaser.State {
         //Creation of arrow button to exit state and return to game selection
         this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
         this.Back_Arrow.anchor.setTo(0.5, 0.5)
-         //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
+
+        this.physics.startSystem(Phaser.Physics.ARCADE);
+
+        //  Our bullet group
+        bullets = this.add.group();
+        bullets.enableBody = true;
+        bullets.physicsBodyType = Phaser.Physics.ARCADE;
+        bullets.createMultiple(30, 'bullet');
+        bullets.setAll('anchor.x', 0.5);
+        bullets.setAll('anchor.y', 1);
+        bullets.setAll('outOfBoundsKill', true);
+        bullets.setAll('checkWorldBounds', true);
+        console.log("This is the bullet: " + bullets)
+
+        //  The hero!
+        player = this.add.sprite(400, 500, 'ship')
+        player.anchor.setTo(0.5, 0.5)
+        player.alive = true
+        this.physics.enable(player, Phaser.Physics.ARCADE)
+        console.log("This is the player alive: " + player.alive)
+
+          //  The baddies!
+        aliens = this.add.group();
+        aliens.enableBody = true;
+        aliens.physicsBodyType = Phaser.Physics.ARCADE;
+        console.log("This is the aliens: " + aliens)
+        createAliens();
+
+        //  An explosion pool
+        explosions = this.add.group();
+        explosions.createMultiple(30, 'kaboom')
+        explosions.forEach(setupInvader, this)
+        console.log("This is the explosions: " + explosions)
+
+        // Game done text
+        stateText = game.add.text(game.world.centerX,game.world.centerY,' ', { font: '84px Arial', fill: '#fff' });
+        stateText.anchor.setTo(0.5, 0.5);
+        stateText.visible = false;
+
+        //  And some controls to play the game with
+        cursors = this.input.keyboard.createCursorKeys();
+        fireButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+        //--------------------------------------------Division Logic------------------------------------------
+
+
+        //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
          var w = this.world.width, h = this.world.height;
          var menu, choiseLabel;
          
@@ -103,11 +166,159 @@ export default class extends Phaser.State {
                {
                    this.pause_label.scale.setTo(1,1)
                }
+                if (player.alive)
+                {
+                //  Reset the player, then check for movement keys
+                player.body.velocity.setTo(0, 0);
+
+                if (cursors.left.isDown)
+                {
+                    player.body.velocity.x = -200;
+                }
+                else if (cursors.right.isDown)
+                {
+                    player.body.velocity.x = 200;
+                }
+
+                //  Firing?
+                if (fireButton.isDown)
+                {
+                    fireBullet();
+                }
+
+                //  Run collision
+                game.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
+                //game.physics.arcade.overlap(enemyBullets, player, enemyHitsPlayer, null, this);
+            }
     }
 
 }
 
 //Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack () {
-    this.state.start('GameSelect')
+    this.state.start('Div_dif')
+}
+
+function createAliens () {
+
+    for (var y = 0; y < 4; y++)
+    {
+        for (var x = 0; x < 10; x++)
+        {
+            var alien = aliens.create(x * 48, y * 50, 'invader');
+            alien.anchor.setTo(0.5, 0.5);
+            alien.animations.add('fly', [ 0, 1, 2, 3 ], 20, true);
+            alien.play('fly');
+            alien.body.moves = false;
+        }
+    }
+
+    aliens.x = 100;
+    aliens.y = 50;
+
+    //  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
+    var tween = game.add.tween(aliens).to( { x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+
+    //  When the tween loops it calls descend
+    //tween.onLoop.add(descend(), this);
+}
+
+function descend() {
+
+    //aliens.y += 10;
+
+}
+
+function setupInvader (invader) {
+
+    invader.anchor.x = 0.5;
+    invader.anchor.y = 0.5;
+    invader.animations.add('kaboom');
+
+}
+
+function fireBullet () {
+
+    //  To avoid them being allowed to fire too fast we set a time limit
+    if (game.time.now > bulletTime)
+    {
+        //  Grab the first bullet we can from the pool
+        var bullet = bullets.getFirstExists(false);
+
+        if (bullet)
+        {
+            //  And fire it
+            bullet.reset(player.x, player.y + 8);
+            bullet.body.velocity.y = -400;
+            bulletTime = game.time.now + 200;
+        }
+    }
+
+}
+
+function collisionHandler (bullet, alien) {
+
+    //  When a bullet hits an alien we kill them both
+    bullet.kill();
+    alien.kill();
+
+    //  Increase the score
+    // score += 20;
+    // scoreText.text = scoreString + score;
+
+    //  And create an explosion :)
+    var explosion = explosions.getFirstExists(false);
+    explosion.reset(alien.body.x, alien.body.y);
+    explosion.play('kaboom', 30, false, true);
+
+    if (aliens.countLiving() == 0)
+    {
+        // score += 1000;
+        // scoreText.text = scoreString + score;
+
+        //enemyBullets.callAll('kill',this);
+        // NEED TO IMPLEMENT A SPECIAL MESSAGE FOR BEATING THE WHOLE DIVISION LEVEL!
+        // CHECK FOR global div level if its 3, then print the grand message!
+        
+        stateText.text = " You Won, \n Click to restart";
+        stateText.visible = true;
+        if(this.game.global.divLevel == 1){
+            console.log("This is the original divLevel: " + this.game.global.divLevel)
+            this.game.global.divLevel = 2
+            this.game.global.unlockDiv2 = true
+            console.log("This is the new divLevel: " + this.game.global.divLevel)
+            console.log("This is the new unlockDiv2: " + this.game.global.unlockDiv2)
+        }
+        else if(this.game.global.divLevel == 2){
+            this.game.global.divLevel = 3
+            this.game.global.unlockDiv3 = true
+        }
+        //the "click to restart" handler
+        game.input.onTap.addOnce(restart,this);
+    }
+
+}
+
+function resetBullet (bullet) {
+
+    //  Called if the bullet goes out of the screen
+    bullet.kill();
+
+}
+
+function restart (aliens) {
+
+    //  A new level starts
+    
+    //resets the life count
+    // lives.callAll('revive');
+    //  And brings the aliens back from the dead :)
+    //aliens.removeAll();
+    createAliens();
+
+    //revives the player
+    //player.revive();
+    //hides the text
+    stateText.visible = false;
+
 }

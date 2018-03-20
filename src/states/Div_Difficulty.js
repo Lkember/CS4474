@@ -40,7 +40,7 @@ export default class extends Phaser.State {
 
         //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
         this.Diff_1_Button = this.add.button(this.world.centerX, this.world.centerY, 'unlock', actionOnClickFact, this)
-        if(this.game.global.unlockDiv3 == true){
+        if(this.game.global.unlockDiv2 == true){
             this.Diff_2_Button = this.add.button(this.world.centerX , this.world.centerY * 1.3, 'unlock2', actionOnClickMult, this)
         }
         else{

@@ -5,6 +5,8 @@
  * Language: ES6
  */
 import Phaser from 'phaser'
+import globals from './globals/index'
+import { clone } from 'lodash'
 
 export default class extends Phaser.State {
     init () {}
@@ -24,6 +26,9 @@ export default class extends Phaser.State {
       //music.loop = true;
 
       //----------------------------------------------UI COMPONENT---------------------------------------------
+      //Setting the global variables
+      this.game.global = clone(globals)
+
       //Set menu background and scale to display
       var Background = this.add.image(0, 0, 'Background')
       Background.width = this.world.width

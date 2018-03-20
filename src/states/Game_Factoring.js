@@ -76,7 +76,6 @@ export default class extends Phaser.State {
         //Spawn Banana at top boundary of world at random x co-ordinate within provided range
         Queue_Num = this.queue.pop()
 
-
         //this.Queue_Num = this.queue.pop()
         this.Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana')
         this.Banana.inputEnabled = true;
@@ -96,7 +95,7 @@ export default class extends Phaser.State {
         this.Banana.addChild(text)
 
         console.log("Currently in if for "+ Queue_Num)
-        this.Banana.events.onOutOfBounds.add(banana_out, this,0, Queue_Num+1)
+        this.Banana.events.onOutOfBounds.add(banana_out, this,0, Queue_Num + 1)
         console.log("Queue_Num + 1: " + (Queue_Num + 1))
         this.Banana.events.onKilled.add(banana_out,this,0, Queue_Num + 1)   //Code Line for testing collisio
 
