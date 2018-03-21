@@ -12,7 +12,12 @@ var mult_2 = 0;
 var answer = 0;
 var firstOp;
 var secondOp;
-var answerOp;
+var answerNum = '5';
+var answerOp = [];
+var comparison = '';
+var numberCorrect = 0;
+var stateText = '';
+var numberSetToPopulate;
 
 export default class extends Phaser.State {
     init () {
@@ -29,7 +34,6 @@ export default class extends Phaser.State {
         this.load.image("Monkey", "../../assets/images/user-monkey-big-snow.png")
     }
 
-
     create () {
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
@@ -42,6 +46,11 @@ export default class extends Phaser.State {
         //Creation of arrow button to exit state and return to game selection
         this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
         this.Back_Arrow.anchor.setTo(0.5, 0.5)
+
+        // Game done text
+        stateText = game.add.text(game.world.centerX,game.world.centerY,' ', { font: '84px Arial', fill: '#fff' });
+        stateText.anchor.setTo(0.5, 0.5);
+        stateText.visible = false;
 
         //----------------------------------------------ICE BLOCKS COMPONENT---------------------------------------------
         //Need to add a check to see what level was selected
@@ -57,53 +66,45 @@ export default class extends Phaser.State {
 
         //----------------------------------------------LOGIC COMPONENT---------------------------------------------
         //Set the default Arrays for the certain level
-        var numberSetToPopulate = levelSelect(this.game.global.level)
+        numberSetToPopulate = levelSelect(this.game.global.multiLevel)
 
         //Because the above array is already randomized, you can pick the first 20 elements to be displayed
         // loop through to fill the children ice blocks with text
         for(var i = 0; i < 20; i++){
             var text = this.add.text(35, 40, numberSetToPopulate[i], {fontSize:"30px", fill: '#000000' });
-            text.visible = true
+            text.visible = false
             this.group.children[i].addChild(text)
             this.group.children[i].value = numberSetToPopulate[i]
-            console.log("Group member value: " + this.group.children[i].value)
             this.group.children[i].inputEnabled = true
-            var temp = this.group.children[i].value
-
             this.group.children[i].events.onInputDown.add(listener, this);
             this.group.children[i].events.onInputDown.add(multSet, this);
-            console.log(mult_1)
-            console.log(mult_2)
         }
 
-
-
-        for(var i=0; i<20; i++){
-            console.log("Value for child " + i +" : " + this.group.children[i].value)
-        }
-
-
+        //----------------------------------------------DISPLAY COMPONENT---------------------------------------------
         //Display equation onscreen **{Is Updated under update()}**
         firstOp = this.add.text(this.world.centerX * 1.3,this.world.centerY * 0.8, mult_1, {fontSize:"100px", fill:"#000000"});
         var mult_sign = this.add.text(this.world.centerX *1.4,this.world.centerY * 0.8, "X", {fontSize:"80px", fill:"#000000"});
         secondOp = this.add.text(this.world.centerX *1.5,this.world.centerY * 0.8, mult_2, {fontSize:"100px", fill:"#000000"});
         var equals = this.add.text(this.world.centerX * 1.6,this.world.centerY * 0.8, "=", {fontSize:"100px", fill:"#000000"});
         answerOp = this.add.text(this.world.centerX *1.75,this.world.centerY * 0.8, answer, {fontSize:"100px", fill:"#000000"});
-        
+
         firstOp.anchor.setTo(0.5,0.5)
         mult_sign.anchor.setTo(0.5,0.5)
         secondOp.anchor.setTo(0.5,0.5)
         equals.anchor.setTo(0.5,0.5)
         answerOp.anchor.setTo(0.5,0.5)
-        
 
+        for (var i = 0; i < answerNum.length; i++)
+        {
+            answerOp[answerNum[i]] = false;
+        }
 
-        //Check if the selected ice blocks multiply to be the right value
-        var counter = 0
-        // 1. if selected, populate the right side section
-        // 2. once counter is two, calculate the product, then compare with user input
+        //  Capture all key presses
+        this.input.keyboard.addCallbacks(this, null, null, keyPress);
 
-
+        // add input from the user
+        // testOp.inputEnabled = true
+        // testOp.events.onInputDown.add(listener2, this)
         //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
         var w = this.world.width, h = this.world.height;
         var menu, choiseLabel;
@@ -163,7 +164,6 @@ export default class extends Phaser.State {
     }
 
     update(){
-
         if(mult_1==0 && mult_2==0){
             firstOp.visible = false
             secondOp.visible = false
@@ -179,7 +179,34 @@ export default class extends Phaser.State {
         secondOp.setText(mult_2)
 
         answer = mult_1 * mult_2
-        answerOp.setText(answer)
+        answerNum = answer.toString()
+        var result = parseInt(comparison)
+        // check the number that is entered and make sure that it matches the answer
+        if(answer == result){
+            console.log("You are a genius. You got the question right!")
+            numberCorrect = numberCorrect + 2
+            resetGame()
+        }
+        else{
+            //console.log("Idk... try again?")
+            if(answerNum.length == comparison.length){
+                comparison = ''
+            }
+            answerOp.setText(" ")
+        }
+
+        if(numberCorrect === 20){
+            console.log("executing the complete function...")
+            this.game.global.multiLevel++
+            if(this.game.global.multiLevel == 2){
+                this.game.global.unlockMulti2 = true
+            }
+            else if(this.game.global.multiLevel == 3){
+                this.game.global.unlockMulti3 = true
+            }
+            complete()
+        }
+        //answerOp.setText(answer)
 
         //Back arrow scale on hover
         if (this.Back_Arrow.input.pointerOver())
@@ -200,8 +227,7 @@ export default class extends Phaser.State {
         {
             this.pause_label.scale.setTo(1,1)
         }
-    }
-    
+    } 
 }
 
 //Function called on ARROW button to return to 'GameSelect' screen
@@ -211,39 +237,45 @@ function actionGoBack () {
     mult_2 = 0
     answer = 0
     currentSet = 0
-
 }
 
+function resetGame(){
+    mult_1 = 0
+    mult_2 = 0
+    answer = 0
+    currentSet = 0
+    comparison = ''
+}
 //Setting variable from current sprite clicked
 function multSet(sprite){
     if(mult_1 == 0){
         mult_1 = sprite.value
     }
-    else mult_2 = sprite.value
- 
+    else if(mult_2 == 0){
+        mult_2 = sprite.value
+    }
+    else{
+        console.log("Stop clicking. Finish your question first")
+    }
     console.log("Mult1 = " + mult_1)
     console.log("Mult2 = " + mult_2)
 }
 
 //Function to swap iceblock sprite to broken iceblock on click
 function listener (sprite) {
-    //
-    //   NEED TO LIMIT THE AMOUNT OF TIMES THEY CAN CLICK TO 2
-    // 
+    //  AMOUNT OF TIMES THEY CAN CLICK is 2
     if(currentSet < 2){
-        console.log("Current set is less than 2, so the block was broken")
+        //console.log("Current set is less than 2, so the block was broken")
         sprite.loadTexture('IceBlockBroken',0,false)
-        //sprite.text.visible = true
+        var text = this.add.text(sprite.width / 2 - 8, sprite.height / 2 - 20, sprite.value, {fontSize:"30px", fill: '#000000' });
+        text.visible = true
+        sprite.addChild(text)
         currentSet++
     }
     else{
         console.log("Current set is at max, so the block is not broken")
     }
-    // get the value of the sprite that is clicked on: console.log(sprite.value)
-    //sprite.text.visible = true
 }
-
-
 
 function levelSelect(level){
     var array = []
@@ -291,6 +323,7 @@ function levelSelect(level){
     }
     return shuffle(array)
 }
+
 // shuffle array to give randomness
 function shuffle(array) {
     let counter = array.length;
@@ -310,4 +343,57 @@ function shuffle(array) {
     }
 
     return array;
+}
+
+// checking the number that the user had entered
+function keyPress(char) {
+    // reset comparison
+
+    //  Loop through each letter of the word being entered and check them against the key that was pressed
+    for (var i = 0; i < answerNum.length; i++)
+    {
+        var letter = answerNum.charAt(i);
+        answerOp.setText(char)
+        //  If they pressed one of the letters in the word, flag it as correct
+        if (char === letter)
+        {
+            answerOp[letter] = true;
+            answerOp.setText(char)
+            comparison = comparison + char
+        }
+    }
+    console.log("Result of input is returned here: " + comparison)
+}
+
+function complete(){
+    mult_1 = 0
+    mult_2 = 0
+    answer = 0
+    currentSet = 0
+    comparison = ''
+    numberCorrect = 0
+    stateText.text = " You Won, \n Click to restart";
+    stateText.visible = true;
+    // reset the game board again
+    console.log("game is complete...")
+    game.input.onTap.addOnce(restart,this);
+}
+
+// need to modify this to reset the game board!
+function restart(){
+    console.log("restarting game...")
+    stateText.visible = false;
+
+    // for(var i = 0; i < 20; i++){
+    //         var text = game.add.text(35, 40, numberSetToPopulate[i], {fontSize:"30px", fill: '#000000' });
+    //         text.visible = true
+    //         game.group.children[i].addChild(text)
+    //         game.group.children[i].value = numberSetToPopulate[i]
+    //         //console.log("Group member value: " + this.group.children[i].value)
+    //         game.group.children[i].inputEnabled = true
+    //         var temp = game.group.children[i].value
+
+    //         game.group.children[i].events.onInputDown.add(listener, this);
+    //         game.group.children[i].events.onInputDown.add(multSet, this);
+    //     }
 }

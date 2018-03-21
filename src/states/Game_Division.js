@@ -85,7 +85,7 @@ export default class extends Phaser.State {
         cursors = this.input.keyboard.createCursorKeys();
         fireButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
-        //--------------------------------------------Division Logic------------------------------------------
+        //--------------------------------------------DIVISION GAME LOGIC-----------------------------------------
 
 
         //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
@@ -199,6 +199,54 @@ function actionGoBack () {
     this.state.start('Div_dif')
 }
 
+function levelSelect(level){
+    var questionBoard = []
+    var number = 0
+    // level 1 = division by 4 max
+    if(level == 1){
+        console.log("level 1 was selected")
+    }
+    // level 2 = division by 8 max
+    else if(level == 2){
+        console.log("level 2 was selected")
+        max = 8
+        for(var i = 0; i < 20; i++){
+          
+        }
+
+    }
+    // level 3 = divison by 12 max
+    else{
+        console.log("level 3 was selected")
+        max = 12
+        for(var i = 0; i < 20; i++){
+           
+        }
+    }
+    return shuffle(array)
+}
+
+// shuffle array to give randomness
+function shuffle(array) {
+    let counter = array.length;
+
+    // While there are elements in the array
+    while (counter > 0) {
+        // Pick a random index
+        let index = Math.floor(Math.random() * counter);
+
+        // Decrease counter by 1
+        counter--;
+
+        // And swap the last element with it
+        let temp = array[counter];
+        array[counter] = array[index];
+        array[index] = temp;
+    }
+
+    return array;
+}
+
 function createAliens () {
 
     for (var y = 0; y < 4; y++)
@@ -221,12 +269,6 @@ function createAliens () {
 
     //  When the tween loops it calls descend
     //tween.onLoop.add(descend(), this);
-}
-
-function descend() {
-
-    //aliens.y += 10;
-
 }
 
 function setupInvader (invader) {
