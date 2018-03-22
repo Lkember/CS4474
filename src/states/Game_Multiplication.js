@@ -21,6 +21,7 @@ var numberSetToPopulate;
 var cancel_sound;
 var correct_sound
 var incorrect_sound
+var ice_break_sound
 
 export default class extends Phaser.State {
     init () {
@@ -29,6 +30,7 @@ export default class extends Phaser.State {
     //Load scene assets to display
     preload () {
         this.load.audio('cancel',['../../assets/fx/cancel1.wav'])
+        this.load.audio('ice_break',['../../assets/fx/ice_break.mp3'])
         this.load.audio('correct',['../../assets/fx/correct1.mp3'])
         this.load.audio('incorrect',['../../assets/fx/incorrect1.mp3'])
         this.load.image('Ice', '../../assets/images/background_ice.jpg')
@@ -41,6 +43,7 @@ export default class extends Phaser.State {
     }
 
     create () {
+        ice_break_sound = this.game.add.audio('ice_break')
         cancel_sound = this.game.add.audio('cancel')
         correct_sound = this.game.add.audio('correct')
         incorrect_sound = this.game.add.audio('incorrect')
@@ -278,6 +281,7 @@ function listener (sprite) {
     //  AMOUNT OF TIMES THEY CAN CLICK is 2
     if(currentSet < 2){
         //console.log("Current set is less than 2, so the block was broken")
+        ice_break_sound.play()
         sprite.loadTexture('IceBlockBroken',0,false)
         var text = this.add.text(sprite.width / 2 - 8, sprite.height / 2 - 20, sprite.value, {fontSize:"30px", fill: '#000000' });
         text.visible = true
