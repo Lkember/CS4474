@@ -10,14 +10,17 @@ import globals from './globals/index'
 import { clone } from 'lodash'
 
 var Queue_Num = 0;
+var cancel_sound;
 
 export default class extends Phaser.State {
-    
+
+
     init() {
     }
 
     //Load scene assets to display
     preload() {
+        this.load.audio('cancel',['../../assets/fx/cancel1.wav'])
         this.load.image('Jungle', '../../assets/images/background_jungle.jpg')
         this.load.image('Banana', '../../assets/images/banana_small.png')
         this.load.image('ProfMonkey', '../../assets/images/prof-monkey.png')
@@ -28,6 +31,8 @@ export default class extends Phaser.State {
     }
 
     create() {
+
+        cancel_sound = this.game.add.audio('cancel')
 
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
@@ -241,6 +246,7 @@ function collisionHandler(object1, object2){
 
 //Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack () {
+    cancel_sound.play()
     this.state.start('Fact_dif')
 }
 

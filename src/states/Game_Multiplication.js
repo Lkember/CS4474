@@ -18,6 +18,9 @@ var comparison = '';
 var numberCorrect = 0;
 var stateText = '';
 var numberSetToPopulate;
+var cancel_sound;
+var correct_sound
+var incorrect_sound
 
 export default class extends Phaser.State {
     init () {
@@ -25,6 +28,9 @@ export default class extends Phaser.State {
 
     //Load scene assets to display
     preload () {
+        this.load.audio('cancel',['../../assets/fx/cancel1.wav'])
+        this.load.audio('correct',['../../assets/fx/correct1.mp3'])
+        this.load.audio('incorrect',['../../assets/fx/incorrect1.mp3'])
         this.load.image('Ice', '../../assets/images/background_ice.jpg')
         this.load.image('Arrow', '../../assets/images/arrow_blue.png')
         this.load.image('menu', '../../assets/images/pause-b.png')
@@ -35,6 +41,9 @@ export default class extends Phaser.State {
     }
 
     create () {
+        cancel_sound = this.game.add.audio('cancel')
+        correct_sound = this.game.add.audio('correct')
+        incorrect_sound = this.game.add.audio('incorrect')
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
         this.background = this.add.image(0, 0, 'Ice')
@@ -183,11 +192,13 @@ export default class extends Phaser.State {
         var result = parseInt(comparison)
         // check the number that is entered and make sure that it matches the answer
         if(answer == result){
+            correct_sound.play()
             console.log("You are a genius. You got the question right!")
             numberCorrect = numberCorrect + 2
             resetGame()
         }
         else{
+
             //console.log("Idk... try again?")
             if(answerNum.length == comparison.length){
                 comparison = ''
@@ -232,6 +243,7 @@ export default class extends Phaser.State {
 
 //Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack () {
+    cancel_sound.play()
     this.state.start('Mult_dif')
     mult_1 = 0
     mult_2 = 0

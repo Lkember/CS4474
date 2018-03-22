@@ -8,12 +8,15 @@ import Phaser from 'phaser'
 import globals from './globals/index'
 import { clone } from 'lodash'
 
+var confirm_sound;
+
 export default class extends Phaser.State {
     init () {}
 
     //Load visual and audio scene assets to display
     preload () {
       this.load.audio('test',['../../assets/fx/dk.mp3'])
+      this.load.audio('confirm',['../../assets/fx/selection1.mp3'])
       this.load.image('Background', '../../assets/images/background_menu.png')
       this.load.image('Button', '../../assets/images/start_button.png')
     }
@@ -22,8 +25,9 @@ export default class extends Phaser.State {
       //-------------------------------------------MENU MUSIC COMPONENT---------------------------------------
       //Play audio file and loop
       var music = this.game.add.audio('test')
-      //music.play();
-      //music.loop = true;
+      confirm_sound = this.game.add.audio('confirm')
+      music.play();
+      music.loop = true;
 
       //----------------------------------------------UI COMPONENT---------------------------------------------
       //Setting the global variables
@@ -61,5 +65,6 @@ export default class extends Phaser.State {
 
 //Function called on START button to proceed to 'GameSelect' screen
 function actionOnClick () {
+  confirm_sound.play()
   this.state.start('GameSelect')
 }

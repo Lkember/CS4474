@@ -17,6 +17,7 @@ var enemyBullet;
 var firingTimer = 0;
 var stateText;
 var livingEnemies = [];
+var cancel_sound;
 
 export default class extends Phaser.State {
     init () {
@@ -24,17 +25,19 @@ export default class extends Phaser.State {
 
     //Load scene assets to display
     preload () {
+        this.load.audio('cancel',['../../assets/fx/cancel1.wav'])
         this.load.image('Desert', '../../assets/images/background_desert.png')
         this.load.image('Arrow', '../../assets/images/arrow_brown.png')
         this.load.image('Pause', '../../assets/images/pause_brown.png')
         this.load.image('menu', '../../assets/images/pause-b.png')
         this.load.image('bullet', '../../assets/images/bullet.png');
-        this.load.spritesheet('invader', '../../assets/images/invader32x32x4.png', 32, 32)
-        this.load.image('ship', '../../assets/images/player.png')
+        this.load.image('bullseye', '../../assets/images/bullseye.png')
+        this.load.image('cowboy', '../../assets/images/cowboy_monkey.png')
         this.load.spritesheet('kaboom', '../../assets/images/explode.png', 128, 128)
     }
 
     create () {
+        cancel_sound = this.game.add.audio('cancel')
         //----------------------------------------------UI COMPONENT------------------------------------------
         //Display background in scene
         this.background = this.add.image(0, 0, 'Desert')
@@ -57,7 +60,7 @@ export default class extends Phaser.State {
         console.log("This is the bullet: " + bullets)
 
         //  The hero!
-        player = this.add.sprite(400, 500, 'ship')
+        player = this.add.sprite(this.world.centerX, this.world.height * 0.85, 'cowboy')
         player.anchor.setTo(0.5, 0.5)
         player.alive = true
         this.physics.enable(player, Phaser.Physics.ARCADE)
@@ -196,6 +199,7 @@ export default class extends Phaser.State {
 
 //Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack () {
+    cancel_sound.play()
     this.state.start('Div_dif')
 }
 
@@ -253,7 +257,8 @@ function createAliens () {
     {
         for (var x = 0; x < 10; x++)
         {
-            var alien = aliens.create(x * 48, y * 50, 'invader');
+            var alien = aliens.create(x * 48, y * 50, 'bullseye');
+            alien.scale.setTo(0.5, 0.5)
             alien.anchor.setTo(0.5, 0.5);
             alien.animations.add('fly', [ 0, 1, 2, 3 ], 20, true);
             alien.play('fly');
@@ -271,11 +276,11 @@ function createAliens () {
     //tween.onLoop.add(descend(), this);
 }
 
-function setupInvader (invader) {
+function setupInvader (bullseye) {
 
-    invader.anchor.x = 0.5;
-    invader.anchor.y = 0.5;
-    invader.animations.add('kaboom');
+    bullseye.anchor.x = 0.5;
+    bullseye.anchor.y = 0.5;
+    bullseye.animations.add('kaboom');
 
 }
 

@@ -9,12 +9,16 @@ import Phaser from 'phaser'
 // import globals from './globals/index'
 // import { clone } from 'lodash'
 
+
+var confirm_sound;
+
 export default class extends Phaser.State {
     init() {
     }
 
     //Load scene assets to display
     preload() {
+        this.load.audio('confirm',['../../assets/fx/selection1.mp3'])
         this.load.image('Background', '../../assets/images/background_menu.png')
         this.load.image('ButtonFactor', '../../assets/images/button_factor.png')
         this.load.image('ButtonMult', '../../assets/images/button_multiply.png')
@@ -22,6 +26,8 @@ export default class extends Phaser.State {
     }
 
     create() {
+        confirm_sound = this.game.add.audio('confirm')
+
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Setting the global variables
         //this.game.global = clone(globals)
@@ -86,16 +92,19 @@ export default class extends Phaser.State {
 
 //Function called on FACTOR button to proceed to difficulty selection
 function actionOnClickFact() {
+    confirm_sound.play()
     this.state.start('Fact_dif')
 }
 
 //Function called on MULTIPLICATION button to proceed to difficulty selection
 function actionOnClickMult() {
+    confirm_sound.play()
     this.state.start('Mult_dif')
 }
 
 //Function called on DIVISION button to proceed to difficulty selection
 function actionOnClickDiv() {
+    confirm_sound.play()
     this.state.start('Div_dif')
 }
 

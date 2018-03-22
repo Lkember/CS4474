@@ -6,12 +6,17 @@
  */
 import Phaser from 'phaser'
 
+var confirm_sound
+var cancel_sound
+
 export default class extends Phaser.State {
     init() {
     }
 
     //Load scene assets to display
     preload() {
+        this.load.audio('confirm',['../../assets/fx/selection1.mp3'])
+        this.load.audio('cancel',['../../assets/fx/cancel1.wav'])
         this.load.image('Background', '../../assets/images/background_menu.png')
         this.load.image('unlock2', '../../assets/images/div_dif_2.png')
         this.load.image('unlock3', '../../assets/images/div_dif_3.png')
@@ -22,6 +27,8 @@ export default class extends Phaser.State {
     }
 
     create() {
+        confirm_sound = this.game.add.audio('confirm')
+        cancel_sound = this.game.add.audio('cancel')
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene and scale to world size
         var Background = this.add.image(0, 0, 'Background')
@@ -86,6 +93,7 @@ export default class extends Phaser.State {
 
 //Function called on button to begin DIVISION game with difficulty 1
 function actionOnClickFact() {
+    confirm_sound.play()
     this.game.global.divLevel = 1
     this.state.start('Game_Division')
 }
@@ -96,6 +104,7 @@ function actionOnClickMult() {
          console.log("Difficulty 2 Locked")
          }
         else{
+            confirm_sound.play()
             this.game.global.divLevel = 2
             this.state.start('Game_Division')
     }
@@ -107,6 +116,7 @@ function actionOnClickDiv() {
          console.log("Difficulty 3 Locked")
      }
    else{
+       confirm_sound.play()
        this.game.global.divLevel = 3
        this.state.start('Game_Division')
     }
@@ -114,5 +124,6 @@ function actionOnClickDiv() {
 
 //Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack () {
+    cancel_sound.play()
     this.state.start('GameSelect')
 }
