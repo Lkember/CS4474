@@ -18,6 +18,15 @@ var firingTimer = 0;
 var stateText;
 var livingEnemies = [];
 var cancel_sound;
+var numberSetToPopulate;
+var dividendArray;
+var div_1 = 0;
+var div_2 = 0;
+var answer = 0;
+var firstOp;
+var secondOp;
+var answerOp = [];
+var board = [];
 
 export default class extends Phaser.State {
     init () {
@@ -26,7 +35,7 @@ export default class extends Phaser.State {
     //Load scene assets to display
     preload () {
         this.load.audio('cancel',['../../assets/fx/cancel1.wav'])
-        this.load.image('Desert', '../../assets/images/background_desert.png')
+        this.load.image('Desert', '../../assets/images/cactus_fixed.png')
         this.load.image('Arrow', '../../assets/images/arrow_brown.png')
         this.load.image('Pause', '../../assets/images/pause_brown.png')
         this.load.image('menu', '../../assets/images/pause-b.png')
@@ -89,7 +98,46 @@ export default class extends Phaser.State {
         fireButton = this.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
         //--------------------------------------------DIVISION GAME LOGIC-----------------------------------------
+        //Set the default Arrays for the certain level
+        numberSetToPopulate = levelSelect(this.game.global.divLevel)
 
+        //Create a list of Dividend
+        dividendArray = createDividend(numberSetToPopulate)
+
+        //Because the above array is already randomized, you can pick the first 20 elements to be displayed
+        // loop through to fill the children ice blocks with text
+        // for(var i = 0; i < 20; i++){
+        //     //var text = this.add.text(35, 40, numberSetToPopulate[i], {fontSize:"30px", fill: '#000000' });
+        //     //text.visible = true
+        //    console.log("This is the number in set: " + numberSetToPopulate[i])
+        //    console.log("The index: " + i)
+        // }
+
+        //--------------------------------------------GAME NUMBERS DISPLAY---------------------------------------
+        //Display equation onscreen
+        //Array of 6 numbers to go on the board
+         //Divisors are even numbers
+
+         div_1 = dividendArray[0]
+         div_2 = numberSetToPopulate[0]
+         var counter = 0
+        for(var i = 1; i < 7; i++){
+             board[counter] = numberSetToPopulate[i]
+             console.log("This is the board number: " + board[counter])
+             counter++ 
+        }
+
+        firstOp = this.add.text(this.world.centerX * 1.3,this.world.centerY * 0.8, div_1, {fontSize:"100px", fill:"#000000"});
+        var mult_sign = this.add.text(this.world.centerX *1.4,this.world.centerY * 0.8, "\u00f7", {fontSize:"80px", fill:"#000000"});
+        secondOp = this.add.text(this.world.centerX *1.5,this.world.centerY * 0.8, div_2, {fontSize:"100px", fill:"#000000"});
+        var equals = this.add.text(this.world.centerX * 1.6,this.world.centerY * 0.8, "=", {fontSize:"100px", fill:"#000000"});
+        answerOp = this.add.text(this.world.centerX *1.75,this.world.centerY * 0.8, answer, {fontSize:"100px", fill:"#000000"});
+
+        firstOp.anchor.setTo(0.5,0.5)
+        mult_sign.anchor.setTo(0.5,0.5)
+        secondOp.anchor.setTo(0.5,0.5)
+        equals.anchor.setTo(0.5,0.5)
+        answerOp.anchor.setTo(0.5,0.5)
 
         //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
          var w = this.world.width, h = this.world.height;
@@ -150,6 +198,31 @@ export default class extends Phaser.State {
     }
 
     update(){
+               // console.log("div_1: " + div_1)
+                //console.log("div_2: " + div_2)
+
+                firstOp.setText(div_1)
+                secondOp.setText(div_2)
+
+                answer = div_1 / div_2
+                //console.log("answer: " + answer)
+                answerOp.setText(answer)
+                // check the number that is entered and make sure that it matches the answer
+                // if(answer){
+                //     correct_sound.play()
+                //     console.log("You are a genius. You got the question right!")
+                //     numberCorrect = numberCorrect + 2
+                //     resetGame()
+                // }
+                // else{
+
+                //     //console.log("Idk... try again?")
+                //     if(answerNum.length == comparison.length){
+                //         comparison = ''
+                //     }
+                //     answerOp.setText(" ")
+                // }
+
                //Back arrow scale on hover
                if (this.Back_Arrow.input.pointerOver())
                {
@@ -204,27 +277,47 @@ function actionGoBack () {
 }
 
 function levelSelect(level){
-    var questionBoard = []
-    var number = 0
-    // level 1 = division by 4 max
+    var array = []
+    var max = 0
+    var counter = 1
+    // level 1 = 6x6 max
     if(level == 1){
         console.log("level 1 was selected")
+        max = 6
+        for(var i = 0; i < 20; i++){
+            if(counter > max){
+                counter = 1
+            }
+            array[i] = counter
+            //console.log("This is the value of the array element: " + i + "This is the value: " + array[i])
+            counter++
+        }
     }
-    // level 2 = division by 8 max
+    // level 2 = 8x8 max
     else if(level == 2){
         console.log("level 2 was selected")
         max = 8
         for(var i = 0; i < 20; i++){
-          
+            if(counter > max){
+                counter = 1
+            }
+            array[i] = counter
+            //console.log("This is the value of the array2 element: " + i + "This is the value: " + array[i])
+            counter++
         }
 
     }
-    // level 3 = divison by 12 max
+    // level 3 = 12x12 max
     else{
         console.log("level 3 was selected")
         max = 12
         for(var i = 0; i < 20; i++){
-           
+            if(counter > max){
+                counter = 1
+            }
+            array[i] = counter
+            //console.log("This is the value of the array3 element: " + i + "This is the value: " + array[i])
+            counter++
         }
     }
     return shuffle(array)
@@ -249,6 +342,18 @@ function shuffle(array) {
     }
 
     return array;
+}
+
+function createDividend(array){
+    var result = []
+    var counter = 0
+    for(var i = 0; i < array.length-1; i=i+2){
+        result[counter] = array[i] * array[i+1]
+        //console.log("This is the result: " + result[counter])
+        //console.log("These are the two numbers: " + array[i] + " and " + array[i+1])
+        counter++
+    }
+    return result;
 }
 
 function createAliens () {
@@ -330,11 +435,11 @@ function collisionHandler (bullet, alien) {
         stateText.text = " You Won, \n Click to restart";
         stateText.visible = true;
         if(this.game.global.divLevel == 1){
-            console.log("This is the original divLevel: " + this.game.global.divLevel)
+            //console.log("This is the original divLevel: " + this.game.global.divLevel)
             this.game.global.divLevel = 2
             this.game.global.unlockDiv2 = true
-            console.log("This is the new divLevel: " + this.game.global.divLevel)
-            console.log("This is the new unlockDiv2: " + this.game.global.unlockDiv2)
+            //console.log("This is the new divLevel: " + this.game.global.divLevel)
+            //console.log("This is the new unlockDiv2: " + this.game.global.unlockDiv2)
         }
         else if(this.game.global.divLevel == 2){
             this.game.global.divLevel = 3
