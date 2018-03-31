@@ -22,11 +22,18 @@ var numberSetToPopulate;
 var dividendArray;
 var div_1 = 0;
 var div_2 = 0;
-var answer = 0;
+var userAnswer = 0;
 var firstOp;
 var secondOp;
 var answerOp = [];
 var board = [];
+var levels;
+var verified = false;
+var attempted = false;
+var counterDividend = 0;
+var counterNumPopulate = 0;
+var max = 0;
+var lock = false;
 
 export default class extends Phaser.State {
     init () {
@@ -66,27 +73,27 @@ export default class extends Phaser.State {
         bullets.setAll('anchor.y', 1);
         bullets.setAll('outOfBoundsKill', true);
         bullets.setAll('checkWorldBounds', true);
-        console.log("This is the bullet: " + bullets)
+        //console.log("This is the bullet: " + bullets)
 
         //  The hero!
         player = this.add.sprite(this.world.centerX, this.world.height * 0.85, 'cowboy')
         player.anchor.setTo(0.5, 0.5)
         player.alive = true
         this.physics.enable(player, Phaser.Physics.ARCADE)
-        console.log("This is the player alive: " + player.alive)
+        //Collider to keep monkey in bounds
+        player.body.collideWorldBounds = true
+        //console.log("This is the player alive: " + player.alive)
 
           //  The baddies!
         aliens = this.add.group();
         aliens.enableBody = true;
         aliens.physicsBodyType = Phaser.Physics.ARCADE;
-        console.log("This is the aliens: " + aliens)
-        createAliens();
 
         //  An explosion pool
         explosions = this.add.group();
         explosions.createMultiple(30, 'kaboom')
         explosions.forEach(setupInvader, this)
-        console.log("This is the explosions: " + explosions)
+        //console.log("This is the explosions: " + explosions)
 
         // Game done text
         stateText = game.add.text(game.world.centerX,game.world.centerY,' ', { font: '84px Arial', fill: '#fff' });
@@ -103,35 +110,26 @@ export default class extends Phaser.State {
 
         //Create a list of Dividend
         dividendArray = createDividend(numberSetToPopulate)
+        levels = dividendArray.length
 
-        //Because the above array is already randomized, you can pick the first 20 elements to be displayed
-        // loop through to fill the children ice blocks with text
-        // for(var i = 0; i < 20; i++){
-        //     //var text = this.add.text(35, 40, numberSetToPopulate[i], {fontSize:"30px", fill: '#000000' });
-        //     //text.visible = true
-        //    console.log("This is the number in set: " + numberSetToPopulate[i])
-        //    console.log("The index: " + i)
-        // }
-
+        console.log("This is dividend's length: " + levels)
+        //console.log("This is numberSetToPopulate's length: " + numberSetToPopulate.length)
+     
         //--------------------------------------------GAME NUMBERS DISPLAY---------------------------------------
         //Display equation onscreen
         //Array of 6 numbers to go on the board
-         //Divisors are even numbers
+        //Divisors are even numbers
+         div_1 = dividendArray[counterDividend]
+         div_2 = numberSetToPopulate[counterNumPopulate]
 
-         div_1 = dividendArray[0]
-         div_2 = numberSetToPopulate[0]
-         var counter = 0
-        for(var i = 1; i < 7; i++){
-             board[counter] = numberSetToPopulate[i]
-             console.log("This is the board number: " + board[counter])
-             counter++ 
-        }
+        // adding the targets
+        createAliens();
 
         firstOp = this.add.text(this.world.centerX * 1.3,this.world.centerY * 0.8, div_1, {fontSize:"100px", fill:"#000000"});
-        var mult_sign = this.add.text(this.world.centerX *1.4,this.world.centerY * 0.8, "\u00f7", {fontSize:"80px", fill:"#000000"});
+        var mult_sign = this.add.text(this.world.centerX *1.4,this.world.centerY * 0.8, " \u00f7 ", {fontSize:"80px", fill:"#000000"});
         secondOp = this.add.text(this.world.centerX *1.5,this.world.centerY * 0.8, div_2, {fontSize:"100px", fill:"#000000"});
-        var equals = this.add.text(this.world.centerX * 1.6,this.world.centerY * 0.8, "=", {fontSize:"100px", fill:"#000000"});
-        answerOp = this.add.text(this.world.centerX *1.75,this.world.centerY * 0.8, answer, {fontSize:"100px", fill:"#000000"});
+        var equals = this.add.text(this.world.centerX * 1.6,this.world.centerY * 0.8, " = ", {fontSize:"100px", fill:"#000000"});
+        answerOp = this.add.text(this.world.centerX *1.75,this.world.centerY * 0.8, userAnswer, {fontSize:"100px", fill:"#000000"});
 
         firstOp.anchor.setTo(0.5,0.5)
         mult_sign.anchor.setTo(0.5,0.5)
@@ -200,28 +198,66 @@ export default class extends Phaser.State {
     update(){
                // console.log("div_1: " + div_1)
                 //console.log("div_2: " + div_2)
+                if(userAnswer == 0){
+                    answerOp.visible = false
+                }
+                else{
+                    answerOp.visible = true
+                }
+                if(counterDividend < levels){
+                    firstOp.setText(div_1)
+                    secondOp.setText(div_2)
 
-                firstOp.setText(div_1)
-                secondOp.setText(div_2)
-
-                answer = div_1 / div_2
-                //console.log("answer: " + answer)
-                answerOp.setText(answer)
+                    var answer = div_1 / div_2
+                    //console.log("answer: " + answer)
+                    answerOp.setText(userAnswer)
+                }
                 // check the number that is entered and make sure that it matches the answer
-                // if(answer){
-                //     correct_sound.play()
-                //     console.log("You are a genius. You got the question right!")
-                //     numberCorrect = numberCorrect + 2
-                //     resetGame()
-                // }
-                // else{
+                if(userAnswer == answer && (attempted)){
+                    console.log("The answer is CORRECT.")
+                    // reset the answer portion
+                    userAnswer = 0
+                    // reset the check to see if the bullet has reached the option
+                    attempted = false
+                    counterDividend++
+                    counterNumPopulate = counterNumPopulate + 2
 
-                //     //console.log("Idk... try again?")
-                //     if(answerNum.length == comparison.length){
-                //         comparison = ''
-                //     }
-                //     answerOp.setText(" ")
-                // }
+                    // restart with the win restart
+                    restart2(aliens)
+
+                    // repopulate with new question
+                    div_1 = dividendArray[counterDividend]
+                    div_2 = numberSetToPopulate[counterNumPopulate]
+                }
+                else if(userAnswer != answer && (attempted)){
+                    console.log("The answer is wrong.")
+                    userAnswer = 0
+                    attempted = false
+                    restart2(aliens)
+                }
+
+                // game will be over when we finish all the dividends
+                if(counterDividend == levels){
+                    console.log("The game is over.")
+                    // lock the game so the animations wont work anymore
+                    lock = true;
+                    stateText.visible = true;
+                    counterDividend++
+                     if(this.game.global.divLevel == 1){
+                        console.log("This is the original divLevel: " + this.game.global.divLevel)
+                        this.game.global.divLevel = 2
+                        this.game.global.unlockDiv2 = true
+                        console.log("This is the new divLevel: " + this.game.global.divLevel)
+                        console.log("This is the new unlockDiv2: " + this.game.global.unlockDiv2)
+                }
+                else if(this.game.global.divLevel == 2){
+                        this.game.global.divLevel = 3
+                        this.game.global.unlockDiv3 = true
+                }
+                // restart the game
+                restart()
+
+                }
 
                //Back arrow scale on hover
                if (this.Back_Arrow.input.pointerOver())
@@ -263,7 +299,7 @@ export default class extends Phaser.State {
                 }
 
                 //  Run collision
-                game.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
+                this.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
                 //game.physics.arcade.overlap(enemyBullets, player, enemyHitsPlayer, null, this);
             }
     }
@@ -278,7 +314,7 @@ function actionGoBack () {
 
 function levelSelect(level){
     var array = []
-    var max = 0
+    //var max = 0
     var counter = 1
     // level 1 = 6x6 max
     if(level == 1){
@@ -323,20 +359,45 @@ function levelSelect(level){
     return shuffle(array)
 }
 
+// takes out duplicates from an array
+function removeDuplicates(min){
+    var unique_array = []
+    var counting = 0
+    var number = 0
+
+    for(var i = min;i < numberSetToPopulate.length; i++){
+        if(unique_array.indexOf(numberSetToPopulate[i]) == -1){
+            unique_array.push(numberSetToPopulate[i])
+        } 
+    }
+    
+    counting = unique_array.length
+    // add additional if the length of the array is less than 5
+    while(counting < 5){
+        number = Math.floor((Math.random() * max) + 1);
+        if(unique_array.indexOf(number) == -1){
+            unique_array.push(number)
+            counting ++
+        } 
+    }
+
+    return unique_array
+}
+
 // shuffle array to give randomness
 function shuffle(array) {
-    let counter = array.length;
+    var counter = 5;
 
     // While there are elements in the array
     while (counter > 0) {
         // Pick a random index
-        let index = Math.floor(Math.random() * counter);
+        var index = Math.floor(Math.random() * counter);
 
         // Decrease counter by 1
         counter--;
 
         // And swap the last element with it
-        let temp = array[counter];
+        var temp = array[counter];
         array[counter] = array[index];
         array[index] = temp;
     }
@@ -349,36 +410,69 @@ function createDividend(array){
     var counter = 0
     for(var i = 0; i < array.length-1; i=i+2){
         result[counter] = array[i] * array[i+1]
-        //console.log("This is the result: " + result[counter])
-        //console.log("These are the two numbers: " + array[i] + " and " + array[i+1])
         counter++
     }
     return result;
 }
 
 function createAliens () {
+    var initial = 0
+    var temp = removeDuplicates(initial)
 
-    for (var y = 0; y < 4; y++)
+    for (var y = 0; y <= 0; y++)
     {
-        for (var x = 0; x < 10; x++)
+        for (var x = 0; x < 5; x++)
         {
-            var alien = aliens.create(x * 48, y * 50, 'bullseye');
-            alien.scale.setTo(0.5, 0.5)
-            alien.anchor.setTo(0.5, 0.5);
-            alien.animations.add('fly', [ 0, 1, 2, 3 ], 20, true);
-            alien.play('fly');
-            alien.body.moves = false;
+            var alien = aliens.create(x * 140, y * 100, 'bullseye')
+            alien.scale.setTo(0.6, 0.6)
+            alien.anchor.setTo(0.1, 0.1)
+            alien.value = temp[initial]
+            var text = game.add.text(35, 40, temp[initial], {fontSize:"30px", fill: '#000000' });
+            alien.addChild(text)
+            initial++
         }
     }
 
-    aliens.x = 100;
+    aliens.x = 130;
     aliens.y = 50;
 
     //  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
     var tween = game.add.tween(aliens).to( { x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+}
 
-    //  When the tween loops it calls descend
-    //tween.onLoop.add(descend(), this);
+function createAliens2 () {
+    // min is the minimum value we have to include to populate the board
+    var min = 0
+
+    if (counterNumPopulate != 0){
+       min = counterNumPopulate - 1
+    }
+
+    var unique_array = removeDuplicates(min)
+    shuffle(unique_array)
+
+    var i = 0
+
+    for (var y = 0; y <= 0; y++)
+    {
+        for (var x = 0; x < 5; x++)
+        {   
+            var alien = aliens.create(x * 140, y * 100, 'bullseye')
+            alien.scale.setTo(0.6, 0.6)
+            alien.anchor.setTo(0.1, 0.1)
+            //console.log("This is the min: " + min + " the unique_array value is: " + unique_array[i])
+            alien.value = unique_array[i]
+            var text = game.add.text(35, 40, unique_array[i], {fontSize:"30px", fill: '#000000' });
+            alien.addChild(text)
+            i++
+        }
+    }
+
+    aliens.x = 130;
+    aliens.y = 50;
+
+    //  All this does is basically start the invaders moving. Notice we're moving the Group they belong to, rather than the invaders directly.
+    var tween = game.add.tween(aliens).to( { x: 200 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
 }
 
 function setupInvader (bullseye) {
@@ -390,7 +484,7 @@ function setupInvader (bullseye) {
 }
 
 function fireBullet () {
-
+    if(lock == false){
     //  To avoid them being allowed to fire too fast we set a time limit
     if (game.time.now > bulletTime)
     {
@@ -405,72 +499,75 @@ function fireBullet () {
             bulletTime = game.time.now + 200;
         }
     }
-
+    }
 }
 
-function collisionHandler (bullet, alien) {
-
+function collisionHandler (bullet, alien){
+    if(lock == false){
     //  When a bullet hits an alien we kill them both
+    userAnswer = alien.value
+    var temp = alien
+    // remove the bullet
     bullet.kill();
-    alien.kill();
-
-    //  Increase the score
-    // score += 20;
-    // scoreText.text = scoreString + score;
+    alien.visible = false
+    attempted = true
 
     //  And create an explosion :)
     var explosion = explosions.getFirstExists(false);
     explosion.reset(alien.body.x, alien.body.y);
     explosion.play('kaboom', 30, false, true);
-
-    if (aliens.countLiving() == 0)
-    {
-        // score += 1000;
-        // scoreText.text = scoreString + score;
-
-        //enemyBullets.callAll('kill',this);
-        // NEED TO IMPLEMENT A SPECIAL MESSAGE FOR BEATING THE WHOLE DIVISION LEVEL!
-        // CHECK FOR global div level if its 3, then print the grand message!
-        
-        stateText.text = " You Won, \n Click to restart";
-        stateText.visible = true;
-        if(this.game.global.divLevel == 1){
-            //console.log("This is the original divLevel: " + this.game.global.divLevel)
-            this.game.global.divLevel = 2
-            this.game.global.unlockDiv2 = true
-            //console.log("This is the new divLevel: " + this.game.global.divLevel)
-            //console.log("This is the new unlockDiv2: " + this.game.global.unlockDiv2)
-        }
-        else if(this.game.global.divLevel == 2){
-            this.game.global.divLevel = 3
-            this.game.global.unlockDiv3 = true
-        }
-        //the "click to restart" handler
-        game.input.onTap.addOnce(restart,this);
     }
-
 }
 
 function resetBullet (bullet) {
-
     //  Called if the bullet goes out of the screen
     bullet.kill();
+}
+
+function restart2 (aliens) {
+
+    //  A new level starts
+    //  And brings the aliens back from the dead :)
+    aliens.removeAll();
+    createAliens2();
+    console.log("restarted2")
 
 }
 
-function restart (aliens) {
-
-    //  A new level starts
-    
-    //resets the life count
-    // lives.callAll('revive');
-    //  And brings the aliens back from the dead :)
-    //aliens.removeAll();
-    createAliens();
-
-    //revives the player
-    //player.revive();
-    //hides the text
+function restartGame(){
     stateText.visible = false;
+    lock = false;
+    firstOp.visible = true
+    secondOp.visible = true
+    // restart everything
+    aliens.removeAll();
+    createAliens();
+    numberSetToPopulate = levelSelect(this.game.global.divLevel)
+        //Create a list of Dividend
+        dividendArray = createDividend(numberSetToPopulate)
+        levels = dividendArray.length
 
+        console.log("This is dividend's length: " + levels)
+        div_1 = dividendArray[counterDividend]
+        div_2 = numberSetToPopulate[counterNumPopulate]
+
+    console.log("restarted")
+  }
+
+function restart () {
+    //  A new level starts
+    //  And brings the aliens back from the dead :)
+    stateText.text = " You Won, \n Click to restart";
+    firstOp.visible = false
+    secondOp.visible = false
+    stateText.visible = true;
+    div_1 = 0;
+    div_2 = 0;
+    userAnswer = 0;
+    verified = false;
+    attempted = false;
+    counterDividend = 0;
+    counterNumPopulate = 0;
+    max = 0;
+    game.input.onTap.addOnce(restartGame,self);
 }
