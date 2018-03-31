@@ -215,6 +215,7 @@ export default class extends Phaser.State {
                 // check the number that is entered and make sure that it matches the answer
                 if(userAnswer == answer && (attempted)){
                     console.log("The answer is CORRECT.")
+                    
                     // reset the answer portion
                     userAnswer = 0
                     // reset the check to see if the bullet has reached the option
