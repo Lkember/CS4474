@@ -8,9 +8,12 @@ import Phaser from 'phaser'
 import { stringify } from 'querystring';
 import globals from './globals/index'
 import { clone } from 'lodash'
+import { posix } from 'path';
 
 var Queue_Num = 0;
 var cancel_sound;
+var number_eq;
+var factor_position_default = 265;
 
 export default class extends Phaser.State {
 
@@ -67,7 +70,8 @@ export default class extends Phaser.State {
         var level = getLevel(this.game.global.factLevel)
         this.queue = []
 
-        var number_eq = level[this.rnd.integerInRange(0,level.length-1)]
+        number_eq = level[this.rnd.integerInRange(0,level.length-1)]
+        console.log("Number EQ: " + number_eq)
         console.log("The number to factor: " + number_eq)
         for(var i=1; i<=number_eq; i++){
             if (number_eq % i == 0){
@@ -75,7 +79,22 @@ export default class extends Phaser.State {
                 console.log("# is factor: " + i)
             }
         }
-        this.add.text(this.world.centerX, 0, String(number_eq),{font:"20px Arial", fill:"#FFFFFF"})
+        //Add first random number
+        var extra_num1 = Math.floor(Math.random() * number_eq) + 1;
+        while(number_eq % extra_num1 == 0){
+            extra_num1 = Math.floor(Math.random() * number_eq) + 1;
+        }
+        this.queue.push(extra_num1)
+
+        //Add second random number
+        var extra_num2 = Math.floor(Math.random() * number_eq) + 1;
+        while(number_eq % extra_num2 == 0){
+            extra_num2 = Math.floor(Math.random() * number_eq) + 1;
+        }
+        this.queue.push(extra_num2)
+
+        this.queue = shuffle(this.queue)
+        this.add.text(177, 325, String(number_eq),{font:"30px Arial",fontWeight: "bold", fill:"#000000"})
 
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
         //Spawn Banana at top boundary of world at random x co-ordinate within provided range
@@ -100,9 +119,9 @@ export default class extends Phaser.State {
         this.Banana.addChild(text)
 
         console.log("Currently in if for "+ Queue_Num)
-        this.Banana.events.onOutOfBounds.add(banana_out, this,0, Queue_Num + 1)
+        this.Banana.events.onOutOfBounds.add(banana_out, this)
         console.log("Queue_Num + 1: " + (Queue_Num + 1))
-        this.Banana.events.onKilled.add(banana_out,this,0, Queue_Num + 1)   //Code Line for testing collisio
+        this.Banana.events.onKilled.add(banana_collide, this)   //Code Line for testing collisio
 
 
         //----------------------------------------------PLAYER CONTROLS------------------------------------------
@@ -246,22 +265,94 @@ function collisionHandler(object1, object2){
 
 //Function called on ARROW button to return to 'GameSelect' screen
 function actionGoBack () {
+    factor_position_default = 265;
     cancel_sound.play()
     this.state.start('Fact_dif')
 }
 
+//Function when colliding with a character
+function banana_collide(){ 
+    if(this.queue.length > 0){
+        if(number_eq % Queue_Num == 0){
+            console.log("That answer is correct!")
+            var board_text = game.add.text(factor_position_default,325,String(Queue_Num) + ",",
+            {font: "20px Arial",
+            fontWeight: "bold",
+            fill: "#000000",
+            boundsAlignH:"right",
+            boundsAlignV: "bottom"})
+            factor_position_default += 20;
+        
+            Queue_Num = this.queue.pop()
+            console.log(Queue_Num)
+            this.Banana.removeChildren()
+            this.Banana.reset(this.rnd.integerInRange(0,game.width), 0)
+            var text2 = this.add.text(20,30,String(Queue_Num),
+                {font: "16px Arial",
+                fontWeight: "bold",
+                fill: "#FFFFFF",
+                boundsAlignH:"right",
+                boundsAlignV: "bottom"})
+            this.Banana.addChild(text2)
+        }
+        else{
+            console.log("You picked the wrong answer!")
+            Queue_Num = this.queue.pop()
+            console.log(Queue_Num)
+            this.Banana.removeChildren()
+            this.Banana.reset(this.rnd.integerInRange(0,game.width), 0)
+            var text2 = this.add.text(20,30,String(Queue_Num),
+                {font: "16px Arial",
+                fontWeight: "bold",
+                fill: "#FFFFFF",
+                boundsAlignH:"right",
+                boundsAlignV: "bottom"})
+            this.Banana.addChild(text2)
+        }
+    } 
+    else this.state.start('Fact_dif')
+}
+
+
 //Function to reset banana position once it leaves world boundary
-function banana_out(value){
-    console.log(value)
-    this.Banana.removeChildren()
-    this.Banana.reset(this.rnd.integerInRange(0,game.width), 0)
-    var text2 = this.add.text(20,30,String(value),
-        {font: "16px Arial",
-        fontWeight: "bold",
-        fill: "#FFFFFF",
-        boundsAlignH:"right",
-        boundsAlignV: "bottom"})
-    this.Banana.addChild(text2)
+function banana_out(){
+    if(this.queue.length > 0){
+        if(number_eq % Queue_Num == 0){
+            console.log("You missed a correct answer! Going back in the queue: " + Queue_Num)
+            this.queue.push(Queue_Num)
+            this.queue = shuffle(this.queue)
+            Queue_Num = this.queue.pop()
+            console.log(Queue_Num)
+            this.Banana.removeChildren()
+            this.Banana.reset(this.rnd.integerInRange(0,game.width), 0)
+            var text2 = this.add.text(20,30,String(Queue_Num),
+                {font: "16px Arial",
+                fontWeight: "bold",
+                fill: "#FFFFFF",
+                boundsAlignH:"right",
+                boundsAlignV: "bottom"})
+            this.Banana.addChild(text2)
+        }
+        else{
+            console.log("You let an incorrect answer go. Good Job!")
+            Queue_Num = this.queue.pop()
+            console.log(Queue_Num)
+            this.Banana.removeChildren()
+            this.Banana.reset(this.rnd.integerInRange(0,game.width), 0)
+            var text2 = this.add.text(20,30,String(Queue_Num),
+                {font: "16px Arial",
+                fontWeight: "bold",
+                fill: "#FFFFFF",
+                boundsAlignH:"right",
+                boundsAlignV: "bottom"})
+            this.Banana.addChild(text2)
+        }
+
+    }
+    else {
+        factor_position_default = 265;
+        this.state.start('Fact_dif')
+    }
 }
 
 //Small function to determine if value is prime or not
@@ -273,3 +364,22 @@ function isPrime(value){
     }
     return value >1
 }
+
+function shuffle(array) {
+    var currentIndex = array.length, temporaryValue, randomIndex;
+  
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
+  
+      // Pick a remaining element...
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+  
+      // And swap it with the current element.
+      temporaryValue = array[currentIndex];
+      array[currentIndex] = array[randomIndex];
+      array[randomIndex] = temporaryValue;
+    }
+  
+    return array;
+  }
