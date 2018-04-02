@@ -1,4 +1,5 @@
 export default{
+	playMusic: true,
 	Que_Num: 0,
 	// level that the user is on
 	multiLevel: 1,

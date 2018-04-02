@@ -34,6 +34,7 @@ var counterDividend = 0;
 var counterNumPopulate = 0;
 var max = 0;
 var lock = false;
+var instructions;
 
 export default class extends Phaser.State {
     init () {
@@ -50,6 +51,8 @@ export default class extends Phaser.State {
         this.load.image('bullseye', '../../assets/images/bullseye_new.png')
         this.load.image('cowboy', '../../assets/images/cowboy_monkey.png')
         this.load.image('sign', '../../assets/images/sign.png')
+        this.load.image('congrats', '../../assets/images/congrats_div.png')
+        this.load.image('instruct', '../../assets/images/instructions_div.png')
         this.load.spritesheet('kaboom', '../../assets/images/explode.png', 128, 128)
     }
 
@@ -154,7 +157,7 @@ export default class extends Phaser.State {
              menu = game.add.sprite(w/2, h/2, 'menu');
              menu.anchor.setTo(0.5, 0.5);
              // And a label to illustrate which menu item was chosen. (This is not necessary)
-             choiseLabel = game.add.text(w/2, h-150, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+             choiseLabel = game.add.text(w/2, h-160, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
              choiseLabel.anchor.setTo(0.5, 0.5);
          });
  
@@ -166,23 +169,48 @@ export default class extends Phaser.State {
              //Only act if paused
              if(game.paused){
                  //Calculate the corners of the menu
-                 var x1 = w/2 - 270/2, x2 = w/2 + 270/2,
-                     y1 = h/2 - 180/2, y2 = h/2 + 180/2;
+                 var x1 = w/2 - 650/2, x2 = w/2 + 700/2,
+                     y1 = h/2 - 560/2, y2 = h/2 + 574/2;
  
                  //Check if the click was inside the menu
                  if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ){
                      //The choicemap is an array that will help us see which item was clicked
-                     var choisemap = ['one', 'two', 'three', 'four', 'five', 'six'];
+                     var choisemap = ['one', 'two', 'three'];
  
                      //Get menu local coordinates for the click
                      var x = event.x - x1,
                          y = event.y - y1;
- 
+
+                     console.log("These are event x values: " + event.x)
+                     console.log("These are event y values: " + event.y)
                      //Calculate the choice
-                     var choise = Math.floor(x / 90) + 3*Math.floor(y / 90);
+                     var choise = Math.floor(x / 230) + 3*Math.floor(y / 287);
+                     console.log("choise number " + choise)
+
+                     //Choices
+                     if(choise == 0){
+                        // go back
+                        console.log("Go back to the selection screen")
+                         menu.destroy();
+                         choiseLabel.destroy();
  
-                     //Display the choice
-                     choiseLabel.text = 'You chose menu item: ' + choisemap[choise];
+                        //Unpause the game
+                        game.paused = false;
+                        game.state.start('Div_dif')
+                     }
+                     else if (choise == 1){
+                       // turn off sound
+                       this.game.global.playMusic = false
+                       console.log("playMusic: "+this.game.global.playMusic)
+                     }
+                     else{
+                        menu.destroy();
+                         choiseLabel.destroy();
+                        //Unpause the game
+                        game.paused = false;
+                       console.log("Go back to the home screen")
+                       game.state.start('GameSelect')
+                     }
                  }
                  else{
                      //Remove the menu and the label
@@ -194,6 +222,12 @@ export default class extends Phaser.State {
                  }
              }
          };       
+
+         //--------------------------------------------Instruction Screen-----------------------------------------
+        //load instruction screen
+        instructions = this.add.image(0, 0, 'instruct')
+        this.input.onTap.addOnce(hide,self);
+
     }
 
     update(){
@@ -306,6 +340,14 @@ export default class extends Phaser.State {
             }
     }
 
+}
+
+function hide(){
+    instructions.visible = false
+}
+
+function goHome(){
+    this.state.start('GameSelect')
 }
 
 //Function called on ARROW button to return to 'GameSelect' screen
@@ -559,7 +601,7 @@ function restartGame(){
 function restart () {
     //  A new level starts
     //  And brings the aliens back from the dead :)
-    stateText.text = " You Won, \n Click to restart";
+    stateText = game.add.sprite(0,0,'congrats');
     firstOp.visible = false
     secondOp.visible = false
     stateText.visible = true;

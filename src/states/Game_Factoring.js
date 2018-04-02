@@ -14,6 +14,7 @@ var Queue_Num = 0;
 var cancel_sound;
 var number_eq;
 var factor_position_default = 265;
+var instructions;
 
 export default class extends Phaser.State {
 
@@ -29,7 +30,9 @@ export default class extends Phaser.State {
         this.load.image('ProfMonkey', '../../assets/images/prof-monkey.png')
         this.load.image('Arrow', '../../assets/images/arrow_yellow.png')
         this.load.image('Pause', '../../assets/images/pause_yellow.png')
-        this.load.image('menu', '../../assets/images/pause-b.png')
+        this.load.image('menu', '../../assets/images/pause_fact.png')
+        this.load.image('congrats', '../../assets/images/congrats_fac.png')
+        this.load.image('instruct', '../../assets/images/instructions_fac.png')
         this.load.spritesheet('Monkey', '../../assets/images/user-monkey-spritesheet.png',228 ,305, 4)
     }
 
@@ -153,7 +156,7 @@ export default class extends Phaser.State {
             menu = game.add.sprite(w/2, h/2, 'menu');
             menu.anchor.setTo(0.5, 0.5);
             // And a label to illustrate which menu item was chosen. (This is not necessary)
-            choiseLabel = game.add.text(w/2, h-150, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+            choiseLabel = game.add.text(w/2, h-160, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
             choiseLabel.anchor.setTo(0.5, 0.5);
         });
 
@@ -165,8 +168,8 @@ export default class extends Phaser.State {
             //Only act if paused
             if(game.paused){
                 //Calculate the corners of the menu
-                var x1 = w/2 - 270/2, x2 = w/2 + 270/2,
-                    y1 = h/2 - 180/2, y2 = h/2 + 180/2;
+                var x1 = w/2 - 650/2, x2 = w/2 + 700/2,
+                     y1 = h/2 - 560/2, y2 = h/2 + 574/2;
 
                 //Check if the click was inside the menu
                 if(event.x > x1 && event.x < x2 && event.y > y1 && event.y < y2 ){
@@ -178,10 +181,32 @@ export default class extends Phaser.State {
                         y = event.y - y1;
 
                     //Calculate the choice
-                    var choise = Math.floor(x / 90) + 3*Math.floor(y / 90);
+                    var choise = Math.floor(x / 230) + 3*Math.floor(y / 287);
 
-                    //Display the choice
-                    choiseLabel.text = 'You chose menu item: ' + choisemap[choise];
+                   //Choices
+                     if(choise == 0){
+                        // go back
+                        console.log("Go back to the selection screen")
+                         menu.destroy();
+                         choiseLabel.destroy();
+ 
+                        //Unpause the game
+                        game.paused = false;
+                        game.state.start('Fact_dif')
+                     }
+                     else if (choise == 1){
+                       // turn off sound
+                       this.game.global.playMusic = false
+                       console.log("playMusic: "+this.game.global.playMusic)
+                     }
+                     else{
+                        menu.destroy();
+                         choiseLabel.destroy();
+                        //Unpause the game
+                        game.paused = false;
+                       console.log("Go back to the home screen")
+                       game.state.start('GameSelect')
+                     }
                 }
                 else{
                     //Remove the menu and the label
@@ -193,6 +218,11 @@ export default class extends Phaser.State {
                 }
             }
         };
+
+        //--------------------------------------------Instruction Screen-----------------------------------------
+        //load instruction screen
+        instructions = this.add.image(0, 0, 'instruct')
+        this.input.onTap.addOnce(hide,self);
     }
 
     
@@ -238,6 +268,10 @@ export default class extends Phaser.State {
         //Check collision with UserMonkey and Banana
         this.physics.arcade.collide(this.UserMonkey, this.Banana, collisionHandler, null, this);
     }
+}
+
+function hide(){
+    instructions.visible = false
 }
 
 function getLevel(level){

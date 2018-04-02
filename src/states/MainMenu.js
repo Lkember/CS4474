@@ -22,17 +22,22 @@ export default class extends Phaser.State {
     }
 
     create () {
-      //-------------------------------------------MENU MUSIC COMPONENT---------------------------------------
-      //Play audio file and loop
-      var music = this.game.add.audio('test')
-      confirm_sound = this.game.add.audio('confirm')
-      music.play();
-      music.loop = true;
 
       //----------------------------------------------UI COMPONENT---------------------------------------------
       //Setting the global variables
       this.game.global = clone(globals)
 
+       //-------------------------------------------MENU MUSIC COMPONENT---------------------------------------
+      //Play audio file and loop
+      var music = this.game.add.audio('test')
+      confirm_sound = this.game.add.audio('confirm')
+      if(this.game.global.playMusic == true){
+        music.play();
+        music.loop = true;
+      }
+      else{
+        music.pause();
+      }
       //Set menu background and scale to display
       var Background = this.add.image(0, 0, 'Background')
       Background.width = this.world.width
