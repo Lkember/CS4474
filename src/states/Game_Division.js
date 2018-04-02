@@ -45,10 +45,11 @@ export default class extends Phaser.State {
         this.load.image('Desert', '../../assets/images/cactus_fixed.png')
         this.load.image('Arrow', '../../assets/images/arrow_brown.png')
         this.load.image('Pause', '../../assets/images/pause_brown.png')
-        this.load.image('menu', '../../assets/images/pause-b.png')
+        this.load.image('menu', '../../assets/images/pause_div.png')
         this.load.image('bullet', '../../assets/images/bullet.png');
-        this.load.image('bullseye', '../../assets/images/bullseye.png')
+        this.load.image('bullseye', '../../assets/images/bullseye_new.png')
         this.load.image('cowboy', '../../assets/images/cowboy_monkey.png')
+        this.load.image('sign', '../../assets/images/sign.png')
         this.load.spritesheet('kaboom', '../../assets/images/explode.png', 128, 128)
     }
 
@@ -428,7 +429,7 @@ function createAliens () {
             alien.scale.setTo(0.6, 0.6)
             alien.anchor.setTo(0.1, 0.1)
             alien.value = temp[initial]
-            var text = game.add.text(35, 40, temp[initial], {fontSize:"30px", fill: '#000000' });
+            var text = game.add.text(68, 56, temp[initial], {fontSize:"50px", fill: '#000000' });
             alien.addChild(text)
             initial++
         }
@@ -463,7 +464,7 @@ function createAliens2 () {
             alien.anchor.setTo(0.1, 0.1)
             //console.log("This is the min: " + min + " the unique_array value is: " + unique_array[i])
             alien.value = unique_array[i]
-            var text = game.add.text(35, 40, unique_array[i], {fontSize:"30px", fill: '#000000' });
+            var text = game.add.text(68, 56, unique_array[i], {fontSize:"50px", fill: '#000000' });
             alien.addChild(text)
             i++
         }
