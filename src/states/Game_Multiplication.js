@@ -30,10 +30,10 @@ export default class extends Phaser.State {
 
     //Load scene assets to display
     preload () {
-        this.load.audio('cancel',['../../assets/fx/cancel1.wav'])
-        this.load.audio('ice_break',['../../assets/fx/ice_break.mp3'])
-        this.load.audio('correct',['../../assets/fx/correct1.mp3'])
-        this.load.audio('incorrect',['../../assets/fx/incorrect1.mp3'])
+        this.load.audio('cancel',['../../assets/fx/cancel1.wav', '../../assets/fx/cancel1.ogg'])
+        this.load.audio('ice_break',['../../assets/fx/ice_break.mp3', '../../assets/fx/ice_break.ogg'])
+        this.load.audio('correct',['../../assets/fx/correct1.mp3', '../../assets/fx/correct1.ogg'])
+        this.load.audio('incorrect',['../../assets/fx/incorrect1.mp3', '../../assets/fx/incorrect1.ogg'])
         this.load.image('Ice', '../../assets/images/background_ice.jpg')
         this.load.image('Arrow', '../../assets/images/arrow_blue.png')
         this.load.image('menu', '../../assets/images/pause_mult.png')
