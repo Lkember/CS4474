@@ -24,7 +24,7 @@ export default class extends Phaser.State {
 
     //Load scene assets to display
     preload() {
-        this.load.audio('cancel',['../../assets/fx/cancel1.wav'])
+        this.load.audio('cancel',['../../assets/fx/cancel1.wav', '../../assets/fx/cancel1.ogg'])
         this.load.image('Jungle', '../../assets/images/background_jungle.jpg')
         this.load.image('Banana', '../../assets/images/banana_small.png')
         this.load.image('ProfMonkey', '../../assets/images/prof-monkey.png')
