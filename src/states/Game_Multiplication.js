@@ -17,6 +17,7 @@ var answerOp = [];
 var comparison = '';
 var numberCorrect = 0;
 var stateText = '';
+var waitForAnswer = false;
 var numberSetToPopulate;
 var cancel_sound;
 var correct_sound
@@ -211,6 +212,11 @@ export default class extends Phaser.State {
             secondOp.visible = false
             answerOp.visible = false
         }
+        else if (mult_1 != 0 && mult_2 == 0) {
+            firstOp.visible = true
+            secondOp.visible = false
+            answerOp.visible = false
+        }
         else{
             firstOp.visible = true
             secondOp.visible = true
@@ -223,32 +229,40 @@ export default class extends Phaser.State {
         answer = mult_1 * mult_2
         answerNum = answer.toString()
         var result = parseInt(comparison)
-        // check the number that is entered and make sure that it matches the answer
-        if(answer == result){
-            correct_sound.play()
-            console.log("You are a genius. You got the question right!")
-            numberCorrect = numberCorrect + 2
-            resetGame()
-        }
-        else{
+        
+        if (!waitForAnswer) {
+            // check the number that is entered and make sure that it matches the answer
+            if(answer == result){
+                correct_sound.play()
+                console.log("You are a genius. You got the question right!")
+                // game.time.events.add(200, function(){});
+                numberCorrect = numberCorrect + 2
 
-            //console.log("Idk... try again?")
-            if(answerNum.length == comparison.length){
-                comparison = ''
+                waitForAnswer = true
+                setTimeout(function() {
+                    resetGame()
+                    waitForAnswer = false
+                }, 1000)
             }
-            answerOp.setText(" ")
-        }
+            else{
+                //console.log("Idk... try again?")
+                if(answerNum.length == comparison.length){
+                    comparison = ''
+                }
+                answerOp.setText(" ")
+            }
 
-        if(numberCorrect === 20){
-            console.log("executing the complete function...")
-            this.game.global.multiLevel++
-            if(this.game.global.multiLevel == 2){
-                this.game.global.unlockMulti2 = true
+            if(numberCorrect === 20){
+                console.log("executing the complete function...")
+                this.game.global.multiLevel++
+                if(this.game.global.multiLevel == 2){
+                    this.game.global.unlockMulti2 = true
+                }
+                else if(this.game.global.multiLevel == 3){
+                    this.game.global.unlockMulti3 = true
+                }
+                complete()
             }
-            else if(this.game.global.multiLevel == 3){
-                this.game.global.unlockMulti3 = true
-            }
-            complete()
         }
         //answerOp.setText(answer)
 
@@ -399,20 +413,22 @@ function shuffle(array) {
 function keyPress(char) {
     // reset comparison
 
-    //  Loop through each letter of the word being entered and check them against the key that was pressed
-    for (var i = 0; i < answerNum.length; i++)
-    {
-        var letter = answerNum.charAt(i);
-        answerOp.setText(char)
-        //  If they pressed one of the letters in the word, flag it as correct
-        if (char === letter)
+    if (mult_1 != 0 && mult_2 != 0) {
+        //  Loop through each letter of the word being entered and check them against the key that was pressed
+        for (var i = 0; i < answerNum.length; i++)
         {
-            answerOp[letter] = true;
+            var letter = answerNum.charAt(i);
             answerOp.setText(char)
-            comparison = comparison + char
+            //  If they pressed one of the letters in the word, flag it as correct
+            if (char === letter)
+            {
+                answerOp[letter] = true;
+                answerOp.setText(char)
+                comparison = comparison + char
+            }
         }
+        console.log("Result of input is returned here: " + comparison)
     }
-    console.log("Result of input is returned here: " + comparison)
 }
 
 function complete(){
