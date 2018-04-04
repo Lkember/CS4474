@@ -15,8 +15,8 @@ export default class extends Phaser.State {
 
     //Load scene assets to display
     preload() {
-        this.load.audio('confirm',['../../assets/fx/selection1.mp3'])
-        this.load.audio('cancel',['../../assets/fx/cancel1.wav'])
+        this.load.audio('confirm',['../../assets/fx/selection1.mp3', 'confirm','../../assets/fx/selection1.ogg'])
+        this.load.audio('cancel',['../../assets/fx/cancel1.wav', '../../assets/fx/cancel1.wav'])
         this.load.image('Background', '../../assets/images/background_menu.png')
         this.load.image('unlock', '../../assets/images/fact_dif_1.png')
         this.load.image('unlock2', '../../assets/images/fact_dif_2.png')
