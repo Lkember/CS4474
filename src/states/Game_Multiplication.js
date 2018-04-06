@@ -124,8 +124,6 @@ export default class extends Phaser.State {
         this.backspaceKey.onDown.add(backspaceIsPressed, this);
         this.enterKey.onDown.add(enterIsPressed, this);
 
-        // game.input.keyboard.addKeyCapture([Phaser.Keyboard.BACKSPACE, Phaser.Keyboard.ENTER])
-
         // add input from the user
         // testOp.inputEnabled = true
         // testOp.events.onInputDown.add(listener2, this)
@@ -433,36 +431,21 @@ function enterIsPressed() {
 
 // checking the number that the user had entered
 function keyPress(char) {
-    // reset comparison
 
+	// Only allow the user to type when 2 blocks are pressed
     if (mult_1 != 0 && mult_2 != 0) {
 
+    	// Only allow 3 characters in the answer
     	if (comparison.length < 3) {
+
         	// Only allow the input to be the numbers 0 to 9
 	        if (char >= '0' && char <= '9') {
 	        	console.log("3")
 	        	comparison = comparison.concat(char)
 	        	answerOp.setText(comparison)
-	        	// answerOp = answerOp.concat(char)
 	        }
     	}
-     //    	if (answerNum.length === answerOp.length) {
-     //    		for (var i = 0; i < answerNum.length; i++) {
-		   //          var letter = answerNum.charAt(i);
-		   //          answerOp.setText(char)
-		   //          //  If they pressed one of the letters in the word, flag it as correct
-		   //          if (char === letter)
-		   //          {
-		   //              answerOp[letter] = true;
-		   //              answerOp.setText(char)
-		   //              comparison = comparison + char
-		   //          }
-	    //     	}
-     //    	}
-    	// }
-    	// else {
-    	// 	answerOp.push(char);
-    	// }
+
         console.log("Result of input is returned here: " + comparison)
     }
 }
