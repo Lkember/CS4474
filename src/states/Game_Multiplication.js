@@ -24,6 +24,8 @@ var correct_sound
 var incorrect_sound
 var ice_break_sound
 var instructions;
+var backspaceKey;
+var enterKey;
 
 export default class extends Phaser.State {
     init () {
@@ -117,6 +119,12 @@ export default class extends Phaser.State {
 
         //  Capture all key presses
         this.input.keyboard.addCallbacks(this, null, null, keyPress);
+        this.backspaceKey = game.input.keyboard.addKey(Phaser.Keyboard.BACKSPACE);
+        this.enterKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        this.backspaceKey.onDown.add(backspaceIsPressed, this);
+        this.enterKey.onDown.add(enterIsPressed, this);
+
+        // game.input.keyboard.addKeyCapture([Phaser.Keyboard.BACKSPACE, Phaser.Keyboard.ENTER])
 
         // add input from the user
         // testOp.inputEnabled = true
@@ -225,33 +233,9 @@ export default class extends Phaser.State {
         //Updates product view with newest variables
         firstOp.setText(mult_1)
         secondOp.setText(mult_2)
-
-        answer = mult_1 * mult_2
-        answerNum = answer.toString()
-        var result = parseInt(comparison)
+        answerOp.setText(comparison)
         
         if (!waitForAnswer) {
-            // check the number that is entered and make sure that it matches the answer
-            if(answer == result){
-                correct_sound.play()
-                console.log("You are a genius. You got the question right!")
-                // game.time.events.add(200, function(){});
-                numberCorrect = numberCorrect + 2
-
-                waitForAnswer = true
-                setTimeout(function() {
-                    resetGame()
-                    waitForAnswer = false
-                }, 1000)
-            }
-            else{
-                //console.log("Idk... try again?")
-                if(answerNum.length == comparison.length){
-                    comparison = ''
-                }
-                answerOp.setText(" ")
-            }
-
             if(numberCorrect === 20){
                 console.log("executing the complete function...")
                 this.game.global.multiLevel++
@@ -264,7 +248,6 @@ export default class extends Phaser.State {
                 complete()
             }
         }
-        //answerOp.setText(answer)
 
         //Back arrow scale on hover
         if (this.Back_Arrow.input.pointerOver())
@@ -288,6 +271,30 @@ export default class extends Phaser.State {
     } 
 }
 
+function verifyAnswer() {
+    answer = mult_1 * mult_2
+    answerNum = answer.toString()
+    var result = parseInt(comparison)
+
+    // check the number that is entered and make sure that it matches the answer
+    if(answer == result){
+        correct_sound.play()
+        console.log("You are a genius. You got the question right!")
+        numberCorrect = numberCorrect + 2
+
+        waitForAnswer = true
+        setTimeout(function() {
+            resetGame()
+            waitForAnswer = false
+        }, 1000)
+    }
+    else{
+        // TODO: Let the user know there answer was wrong!
+        incorrect_sound.play()
+    }
+}
+
+
 function hide(){
     instructions.visible = false
 }
@@ -309,6 +316,7 @@ function resetGame(){
     currentSet = 0
     comparison = ''
 }
+
 //Setting variable from current sprite clicked
 function multSet(sprite){
     if(mult_1 == 0){
@@ -409,24 +417,52 @@ function shuffle(array) {
     return array;
 }
 
+// When space is pressed
+function backspaceIsPressed() {
+	if (comparison.length > 0) {
+		comparison = comparison.substring(0, comparison.length-1);
+	}
+}
+
+// when enter is pressed
+function enterIsPressed() {
+	if (comparison.length > 0) {
+		verifyAnswer();
+	}
+}
+
 // checking the number that the user had entered
 function keyPress(char) {
     // reset comparison
 
     if (mult_1 != 0 && mult_2 != 0) {
-        //  Loop through each letter of the word being entered and check them against the key that was pressed
-        for (var i = 0; i < answerNum.length; i++)
-        {
-            var letter = answerNum.charAt(i);
-            answerOp.setText(char)
-            //  If they pressed one of the letters in the word, flag it as correct
-            if (char === letter)
-            {
-                answerOp[letter] = true;
-                answerOp.setText(char)
-                comparison = comparison + char
-            }
-        }
+
+    	if (comparison.length < 3) {
+        	// Only allow the input to be the numbers 0 to 9
+	        if (char >= '0' && char <= '9') {
+	        	console.log("3")
+	        	comparison = comparison.concat(char)
+	        	answerOp.setText(comparison)
+	        	// answerOp = answerOp.concat(char)
+	        }
+    	}
+     //    	if (answerNum.length === answerOp.length) {
+     //    		for (var i = 0; i < answerNum.length; i++) {
+		   //          var letter = answerNum.charAt(i);
+		   //          answerOp.setText(char)
+		   //          //  If they pressed one of the letters in the word, flag it as correct
+		   //          if (char === letter)
+		   //          {
+		   //              answerOp[letter] = true;
+		   //              answerOp.setText(char)
+		   //              comparison = comparison + char
+		   //          }
+	    //     	}
+     //    	}
+    	// }
+    	// else {
+    	// 	answerOp.push(char);
+    	// }
         console.log("Result of input is returned here: " + comparison)
     }
 }
