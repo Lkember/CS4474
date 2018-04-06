@@ -1,7 +1,7 @@
 /**
  * @file: Div_Difficulty.js
  * Purpose: Game state to select division game difficulty
- * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera, Logan Kember
  * Language: ES6
  */
 import Phaser from 'phaser'

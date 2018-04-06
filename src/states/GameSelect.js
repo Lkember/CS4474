@@ -2,7 +2,7 @@
  * @file: GameSelect.js
  * Purpose: Game state to select game type between factoring,
  *          multiplication and division
- * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera, Logan Kember
  * Language: ES6
  */
 import Phaser from 'phaser'

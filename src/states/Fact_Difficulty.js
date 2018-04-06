@@ -1,7 +1,7 @@
 /**
  * @file: Fact_Difficulty.js
  * Purpose: Game state to select factoring game difficulty
- * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera, Logan Kember
  * Language: ES6
  */
 import Phaser from 'phaser'
