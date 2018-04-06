@@ -1,7 +1,7 @@
 /**
  * @file: MainMenu.js
  * Purpose: Game state to display game's main menu
- * Authors: Jieni Hou, Jason Lee, Jose Rivera
+ * Authors: Jieni Hou, Jason Lee, Jose Rivera, Logan Kember
  * Language: ES6
  */
 import Phaser from 'phaser'
@@ -32,8 +32,7 @@ export default class extends Phaser.State {
       var music = this.game.add.audio('test')
       confirm_sound = this.game.add.audio('confirm')
       if(this.game.global.playMusic == true){
-        music.play();
-        music.loop = true;
+        music.loopFull();
       }
       else{
         music.pause();
