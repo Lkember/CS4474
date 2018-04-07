@@ -205,6 +205,7 @@ export default class extends Phaser.State {
         //--------------------------------------------Instruction Screen-----------------------------------------
         //load instruction screen
         instructions = this.add.image(0, 0, 'instruct')
+        instructions.inputEnabled = true
         this.input.onTap.addOnce(hide,self);
     }
 
@@ -291,6 +292,7 @@ function verifyAnswer() {
 
 function hide(){
     instructions.visible = false
+    game.input.enabled = true
 }
 
 //Function called on ARROW button to return to 'GameSelect' screen
