@@ -231,113 +231,114 @@ export default class extends Phaser.State {
     }
 
     update(){
-               // console.log("div_1: " + div_1)
-                //console.log("div_2: " + div_2)
-                if(userAnswer == 0){
-                    answerOp.visible = false
-                }
-                else{
-                    answerOp.visible = true
-                }
-                if(counterDividend < levels){
-                    firstOp.setText(div_1)
-                    secondOp.setText(div_2)
+       // console.log("div_1: " + div_1)
+        //console.log("div_2: " + div_2)
+        if(userAnswer == 0){
+            answerOp.visible = false
+        }
+        else{
+            answerOp.visible = true
+        }
+        if(counterDividend < levels){
+            firstOp.setText(div_1)
+            secondOp.setText(div_2)
 
-                    var answer = div_1 / div_2
-                    //console.log("answer: " + answer)
-                    answerOp.setText(userAnswer)
-                }
-                // check the number that is entered and make sure that it matches the answer
-                if(userAnswer == answer && (attempted)){
-                    console.log("The answer is CORRECT.")
-                    
-                    // reset the answer portion
-                    userAnswer = 0
-                    // reset the check to see if the bullet has reached the option
-                    attempted = false
-                    counterDividend++
-                    counterNumPopulate = counterNumPopulate + 2
+            var answer = div_1 / div_2
+            //console.log("answer: " + answer)
+            answerOp.setText(userAnswer)
+        }
+        // check the number that is entered and make sure that it matches the answer
+        if(userAnswer == answer && (attempted)){
+            console.log("The answer is CORRECT.")
+            
+            // reset the answer portion
+            userAnswer = 0
+            // reset the check to see if the bullet has reached the option
+            attempted = false
+            counterDividend++
+            counterNumPopulate = counterNumPopulate + 2
 
-                    // restart with the win restart
-                    restart2(aliens)
+            // restart with the win restart
+            restart2(aliens)
 
-                    // repopulate with new question
-                    div_1 = dividendArray[counterDividend]
-                    div_2 = numberSetToPopulate[counterNumPopulate]
-                }
-                else if(userAnswer != answer && (attempted)){
-                    console.log("The answer is wrong.")
-                    userAnswer = 0
-                    attempted = false
-                    restart2(aliens)
-                }
+            // repopulate with new question
+            div_1 = dividendArray[counterDividend]
+            div_2 = numberSetToPopulate[counterNumPopulate]
+        }
+        else if(userAnswer != answer && (attempted)){
+            console.log("The answer is wrong.")
+            userAnswer = 0
+            attempted = false
+            restart2(aliens)
+        }
 
-                // game will be over when we finish all the dividends
-                if(counterDividend == levels){
-                    console.log("The game is over.")
-                    // lock the game so the animations wont work anymore
-                    lock = true;
-                    stateText.visible = true;
-                    counterDividend++
-                     if(this.game.global.divLevel == 1){
-                        console.log("This is the original divLevel: " + this.game.global.divLevel)
-                        this.game.global.divLevel = 2
-                        this.game.global.unlockDiv2 = true
-                        console.log("This is the new divLevel: " + this.game.global.divLevel)
-                        console.log("This is the new unlockDiv2: " + this.game.global.unlockDiv2)
-                }
-                else if(this.game.global.divLevel == 2){
-                        this.game.global.divLevel = 3
-                        this.game.global.unlockDiv3 = true
-                }
-                // restart the game
-                restart()
-
-                }
-
-               //Back arrow scale on hover
-               if (this.Back_Arrow.input.pointerOver())
-               {
-                   this.Back_Arrow.scale.setTo(1.1,1.1)
-               }
-               else
-               {
-                   this.Back_Arrow.scale.setTo(1,1)
-               }
-       
-               //Pause button scale on hover
-               if (this.pause_label.input.pointerOver())
-               {
-                   this.pause_label.scale.setTo(1.1,1.1)
-               }
-                   else
-               {
-                   this.pause_label.scale.setTo(1,1)
-               }
-                if (player.alive)
-                {
-                //  Reset the player, then check for movement keys
-                player.body.velocity.setTo(0, 0);
-
-                if (cursors.left.isDown)
-                {
-                    player.body.velocity.x = -200;
-                }
-                else if (cursors.right.isDown)
-                {
-                    player.body.velocity.x = 200;
-                }
-
-                //  Firing?
-                if (fireButton.isDown)
-                {
-                    fireBullet();
-                }
-
-                //  Run collision
-                this.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
-                //game.physics.arcade.overlap(enemyBullets, player, enemyHitsPlayer, null, this);
+        // game will be over when we finish all the dividends
+        if(counterDividend == levels){
+            console.log("The game is over.")
+            // lock the game so the animations wont work anymore
+            lock = true;
+            stateText.visible = true;
+            counterDividend++
+            
+            if(this.game.global.divLevel == 1){
+                console.log("This is the original divLevel: " + this.game.global.divLevel)
+                this.game.global.divLevel = 2
+                this.game.global.unlockDiv2 = true
+                console.log("This is the new divLevel: " + this.game.global.divLevel)
+                console.log("This is the new unlockDiv2: " + this.game.global.unlockDiv2)
             }
+            else if(this.game.global.divLevel == 2){
+                this.game.global.divLevel = 3
+                this.game.global.unlockDiv3 = true
+            }
+            // restart the game
+            restart()
+
+        }
+
+       //Back arrow scale on hover
+        if (this.Back_Arrow.input.pointerOver())
+        {
+            this.Back_Arrow.scale.setTo(1.1,1.1)
+        }
+        else
+        {
+            this.Back_Arrow.scale.setTo(1,1)
+        }
+
+        //Pause button scale on hover
+        if (this.pause_label.input.pointerOver())
+        {
+            this.pause_label.scale.setTo(1.1,1.1)
+        }
+        else
+        {
+            this.pause_label.scale.setTo(1,1)
+        }
+        if (player.alive)
+        {
+            //  Reset the player, then check for movement keys
+            player.body.velocity.setTo(0, 0);
+
+            if (cursors.left.isDown)
+            {
+                player.body.velocity.x = -200;
+            }
+            else if (cursors.right.isDown)
+            {
+                player.body.velocity.x = 200;
+            }
+
+            //  Firing?
+            if (fireButton.isDown)
+            {
+                fireBullet();
+            }
+
+            //  Run collision
+            this.physics.arcade.overlap(bullets, aliens, collisionHandler, null, this);
+            //game.physics.arcade.overlap(enemyBullets, player, enemyHitsPlayer, null, this);
+        }
     }
 
 }
@@ -538,8 +539,8 @@ function fireBullet () {
         if (bullet)
         {
             //  And fire it
-            bullet.reset(player.x, player.y + 8);
-            bullet.body.velocity.y = -400;
+            bullet.reset(player.x-88, player.y - 132);
+            bullet.body.velocity.y = -500;
             bulletTime = game.time.now + 200;
         }
     }
