@@ -95,7 +95,6 @@ export default class extends Phaser.State {
             this.group.children[i].value = numberSetToPopulate[i]
             this.group.children[i].inputEnabled = true
             this.group.children[i].events.onInputDown.add(listener, this);
-            this.group.children[i].events.onInputDown.add(multSet, this);
         }
 
         //----------------------------------------------DISPLAY COMPONENT---------------------------------------------
@@ -124,9 +123,6 @@ export default class extends Phaser.State {
         this.backspaceKey.onDown.add(backspaceIsPressed, this);
         this.enterKey.onDown.add(enterIsPressed, this);
 
-        // add input from the user
-        // testOp.inputEnabled = true
-        // testOp.events.onInputDown.add(listener2, this)
         //--------------------------------------------PAUSE MENU COMPONENT------------------------------------------
         var w = this.world.width, h = this.world.height;
         var menu, choiseLabel;
@@ -332,8 +328,9 @@ function multSet(sprite){
 
 //Function to swap iceblock sprite to broken iceblock on click
 function listener (sprite) {
+
     //  AMOUNT OF TIMES THEY CAN CLICK is 2
-    if(currentSet < 2){
+    if(currentSet < 2 && sprite.key != 'IceBlockBroken'){
         //console.log("Current set is less than 2, so the block was broken")
         ice_break_sound.play()
         sprite.loadTexture('IceBlockBroken',0,false)
@@ -341,6 +338,7 @@ function listener (sprite) {
         text.visible = true
         sprite.addChild(text)
         currentSet++
+        multSet(sprite)
     }
     else{
         console.log("Current set is at max, so the block is not broken")
