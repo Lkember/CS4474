@@ -15,6 +15,8 @@ var cancel_sound;
 var number_eq;
 var factor_position_default = 265;
 var instructions;
+var questionsLeft;
+var queue = [];
 
 export default class extends Phaser.State {
 
@@ -71,39 +73,41 @@ export default class extends Phaser.State {
 
         //-----------------------------------------------GAME LOGIC----------------------------------------------
         var level = getLevel(this.game.global.factLevel)
-        this.queue = []
 
         number_eq = level[this.rnd.integerInRange(0,level.length-1)]
         console.log("Number EQ: " + number_eq)
         console.log("The number to factor: " + number_eq)
         for(var i=1; i<=number_eq; i++){
             if (number_eq % i == 0){
-                this.queue.push(i)
+                queue.push(i)
                 console.log("# is factor: " + i)
             }
         }
+
         //Add first random number
         var extra_num1 = Math.floor(Math.random() * number_eq) + 1;
         while(number_eq % extra_num1 == 0){
             extra_num1 = Math.floor(Math.random() * number_eq) + 1;
         }
-        this.queue.push(extra_num1)
+        queue.push(extra_num1)
 
         //Add second random number
         var extra_num2 = Math.floor(Math.random() * number_eq) + 1;
         while(number_eq % extra_num2 == 0){
             extra_num2 = Math.floor(Math.random() * number_eq) + 1;
         }
-        this.queue.push(extra_num2)
+        queue.push(extra_num2)
 
-        this.queue = shuffle(this.queue)
+        queue = shuffle(queue)
         this.add.text(177, 325, String(number_eq),{font:"30px Arial",fontWeight: "bold", fill:"#000000"})
+
+        questionsLeft = this.add.text(260, this.world.centerY * 0.9, "10 questions left", {fontSize:"40px", fill:"#FFFFFF"});
+        questionsLeft.anchor.setTo(0.5, 0.5)
 
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
         //Spawn Banana at top boundary of world at random x co-ordinate within provided range
-        Queue_Num = this.queue.pop()
-
-        //this.Queue_Num = this.queue.pop()
+        Queue_Num = queue.pop()
+        
         this.Banana = this.add.sprite(this.rnd.integerInRange(0, this.world.width), 0, 'Banana')
         this.Banana.inputEnabled = true;
         this.physics.enable(this.Banana, Phaser.Physics.ARCADE)
@@ -267,11 +271,22 @@ export default class extends Phaser.State {
 
         //Check collision with UserMonkey and Banana
         this.physics.arcade.collide(this.UserMonkey, this.Banana, collisionHandler, null, this);
+
+        updateRemaining()
     }
 }
 
 function hide(){
     instructions.visible = false
+}
+
+function updateRemaining() {
+    if (queue.length+1 != 1) {
+        questionsLeft.setText(`${queue.length+1} questions left`)
+    }
+    else {
+        questionsLeft.setText(`${queue.length+1} question left`)
+    }
 }
 
 function getLevel(level){
@@ -306,7 +321,7 @@ function actionGoBack () {
 
 //Function when colliding with a character
 function banana_collide(){ 
-    if(this.queue.length > 0){
+    if(queue.length > 0){
         if(number_eq % Queue_Num == 0){
             console.log("That answer is correct!")
             var board_text = game.add.text(factor_position_default,325,String(Queue_Num) + ",",
@@ -317,7 +332,7 @@ function banana_collide(){
             boundsAlignV: "bottom"})
             factor_position_default += 20;
         
-            Queue_Num = this.queue.pop()
+            Queue_Num = queue.pop()
             console.log(Queue_Num)
             this.Banana.removeChildren()
             this.Banana.reset(this.rnd.integerInRange(0,game.width), 0)
@@ -331,7 +346,7 @@ function banana_collide(){
         }
         else{
             console.log("You picked the wrong answer!")
-            Queue_Num = this.queue.pop()
+            Queue_Num = queue.pop()
             console.log(Queue_Num)
             this.Banana.removeChildren()
             this.Banana.reset(this.rnd.integerInRange(0,game.width), 0)
@@ -350,12 +365,12 @@ function banana_collide(){
 
 //Function to reset banana position once it leaves world boundary
 function banana_out(){
-    if(this.queue.length > 0){
+    if(queue.length > 0){
         if(number_eq % Queue_Num == 0){
             console.log("You missed a correct answer! Going back in the queue: " + Queue_Num)
-            this.queue.push(Queue_Num)
-            this.queue = shuffle(this.queue)
-            Queue_Num = this.queue.pop()
+            queue.push(Queue_Num)
+            queue = shuffle(queue)
+            Queue_Num = queue.pop()
             console.log(Queue_Num)
             this.Banana.removeChildren()
             this.Banana.reset(this.rnd.integerInRange(0,game.width), 0)
@@ -369,7 +384,7 @@ function banana_out(){
         }
         else{
             console.log("You let an incorrect answer go. Good Job!")
-            Queue_Num = this.queue.pop()
+            Queue_Num = queue.pop()
             console.log(Queue_Num)
             this.Banana.removeChildren()
             this.Banana.reset(this.rnd.integerInRange(0,game.width), 0)
