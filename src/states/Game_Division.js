@@ -35,6 +35,7 @@ var counterNumPopulate = 0;
 var max = 0;
 var lock = false;
 var instructions;
+var questionsLeft;
 
 export default class extends Phaser.State {
     init () {
@@ -118,7 +119,10 @@ export default class extends Phaser.State {
 
         console.log("This is dividend's length: " + levels)
         //console.log("This is numberSetToPopulate's length: " + numberSetToPopulate.length)
-     
+        
+        questionsLeft = this.add.text(game.world.centerX * 1.4,game.world.centerY*0.95, "", {fontSize:"40px", fill:"#000000"});
+        questionsLeft.anchor.setTo(0.5, 0.5)
+
         //--------------------------------------------GAME NUMBERS DISPLAY---------------------------------------
         //Display equation onscreen
         //Array of 6 numbers to go on the board
@@ -231,8 +235,6 @@ export default class extends Phaser.State {
     }
 
     update(){
-       // console.log("div_1: " + div_1)
-        //console.log("div_2: " + div_2)
         if(userAnswer == 0){
             answerOp.visible = false
         }
@@ -271,6 +273,8 @@ export default class extends Phaser.State {
             attempted = false
             restart2(aliens)
         }
+
+        updateNumQuestions()
 
         // game will be over when we finish all the dividends
         if(counterDividend == levels){
@@ -341,6 +345,17 @@ export default class extends Phaser.State {
         }
     }
 
+}
+
+function updateNumQuestions() {
+    var questions = levels - counterDividend;
+
+    if (questions != 1) {
+        questionsLeft.setText(`${questions} questions left`)
+    }
+    else {
+        questionsLeft.setText(`${questions} question left`)
+    }
 }
 
 function hide(){
@@ -549,18 +564,19 @@ function fireBullet () {
 
 function collisionHandler (bullet, alien){
     if(lock == false){
-    //  When a bullet hits an alien we kill them both
-    userAnswer = alien.value
-    var temp = alien
-    // remove the bullet
-    bullet.kill();
-    alien.visible = false
-    attempted = true
+        //  When a bullet hits an alien we kill them both
+        userAnswer = alien.value
+        var temp = alien
+        
+        // remove the bullet
+        bullet.kill();
+        alien.visible = false
+        attempted = true
 
-    //  And create an explosion :)
-    var explosion = explosions.getFirstExists(false);
-    explosion.reset(alien.body.x, alien.body.y);
-    explosion.play('kaboom', 30, false, true);
+        //  And create an explosion :)
+        var explosion = explosions.getFirstExists(false);
+        explosion.reset(alien.body.x, alien.body.y);
+        explosion.play('kaboom', 30, false, true);
     }
 }
 
