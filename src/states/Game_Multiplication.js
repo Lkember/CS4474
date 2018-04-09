@@ -274,6 +274,7 @@ function verifyAnswer() {
     // check the number that is entered and make sure that it matches the answer
     if(answer == result){
         correct_sound.play()
+        answerOp.addColor("#00FF00", 0); // set colour to green
         console.log("You are a genius. You got the question right!")
         numberCorrect = numberCorrect + 2
 
@@ -281,12 +282,13 @@ function verifyAnswer() {
         setTimeout(function() {
             resetGame()
             waitForAnswer = false
-        }, 1000)
+            answerOp.addColor("#000000", 0)
+        }, 750)
     }
     else{
-        answerOp.addColor("#ff0000", 0); // set colour to red
         incorrect_sound.play()
 
+        answerOp.addColor("#ff0000", 0); // set colour to red
         setTimeout(function() {
             answerOp.addColor("#000000", 0)
         }, 1000)
