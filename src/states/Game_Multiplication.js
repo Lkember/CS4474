@@ -284,8 +284,12 @@ function verifyAnswer() {
         }, 1000)
     }
     else{
-        // TODO: Let the user know there answer was wrong!
+        answerOp.addColor("#ff0000", 0); // set colour to red
         incorrect_sound.play()
+
+        setTimeout(function() {
+            answerOp.addColor("#000000", 0)
+        }, 1000)
     }
 }
 
