@@ -267,15 +267,16 @@ export default class extends Phaser.State {
             // play the correct sound
             correct_sound.play()
 
-            // reset the answer portion
-            userAnswer = 0
             // reset the check to see if the bullet has reached the option
             attempted = false
             counterDividend++
             counterNumPopulate = counterNumPopulate + 2
+            answerOp.visible = true
 
             setTimeout(function() {
-
+                // reset the answer portion
+                userAnswer = 0
+                
                 // restart with the win restart
                 restart2(aliens)
 
