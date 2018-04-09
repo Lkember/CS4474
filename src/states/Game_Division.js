@@ -130,7 +130,7 @@ export default class extends Phaser.State {
         console.log("This is dividend's length: " + levels)
         //console.log("This is numberSetToPopulate's length: " + numberSetToPopulate.length)
         
-        questionsLeft = this.add.text(game.world.centerX * 1.5,game.world.centerY*0.2, "", {fontSize:"40px", fill:"#000000"});
+        questionsLeft = this.add.text(game.world.centerX * 1.6,game.world.centerY*0.2, "", {fontSize:"40px", fill:"#000000"});
         questionsLeft.anchor.setTo(0.5, 0.5)
 
         //--------------------------------------------GAME NUMBERS DISPLAY---------------------------------------
