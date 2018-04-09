@@ -43,7 +43,7 @@ export default class extends Phaser.State {
       Background.height = this.world.height
 
       //Display game title (NEEDS STYLING**)
-      var text = this.add.text(this.world.centerX, this.world.centerY/4,"Arithmetic Monkeys",
+      var text = this.add.text(this.world.centerX, this.world.centerY/4,"Congo's Math Adventure",
           {font: "60px Arial",
            fontWeight: "bold",
            fill: "#FFD700",

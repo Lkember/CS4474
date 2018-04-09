@@ -204,7 +204,8 @@ export default class extends Phaser.State {
 
         //--------------------------------------------Instruction Screen-----------------------------------------
         //load instruction screen
-        instructions = this.add.image(0, 0, 'instruct')
+        instructions = this.add.image(this.world.centerX, this.world.centerY, 'instruct')
+        instructions.anchor.setTo(0.5,0.5)
         instructions.inputEnabled = true
         this.input.onTap.addOnce(hide,self);
     }
