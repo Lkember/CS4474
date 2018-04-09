@@ -36,6 +36,9 @@ var max = 0;
 var lock = false;
 var instructions;
 var questionsLeft;
+var correct_sound;
+var incorrect_sound;
+var explosion_sound;
 
 export default class extends Phaser.State {
     init () {
@@ -44,6 +47,8 @@ export default class extends Phaser.State {
     //Load scene assets to display
     preload () {
         this.load.audio('cancel',['../../assets/fx/cancel1.wav', '../../assets/fx/cancel1.ogg'])
+        this.load.audio('correct',['../../assets/fx/correct1.mp3', '../../assets/fx/correct1.ogg'])
+        this.load.audio('incorrect',['../../assets/fx/incorrect1.mp3', '../../assets/fx/incorrect1.ogg'])
         this.load.image('Desert', '../../assets/images/cactus_fixed.png')
         this.load.image('Arrow', '../../assets/images/arrow_brown.png')
         this.load.image('Pause', '../../assets/images/pause_brown.png')
@@ -66,8 +71,11 @@ export default class extends Phaser.State {
         //Creation of arrow button to exit state and return to game selection
         this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
         this.Back_Arrow.anchor.setTo(0.5, 0.5)
-
         this.physics.startSystem(Phaser.Physics.ARCADE);
+
+        // AUDIO
+        correct_sound = this.game.add.audio('correct')
+        incorrect_sound = this.game.add.audio('incorrect')
 
         //  Our bullet group
         bullets = this.add.group();
@@ -252,7 +260,10 @@ export default class extends Phaser.State {
         // check the number that is entered and make sure that it matches the answer
         if(userAnswer == answer && (attempted)){
             console.log("The answer is CORRECT.")
-            
+
+            // play the correct sound
+            correct_sound.play()
+
             // reset the answer portion
             userAnswer = 0
             // reset the check to see if the bullet has reached the option
@@ -260,21 +271,25 @@ export default class extends Phaser.State {
             counterDividend++
             counterNumPopulate = counterNumPopulate + 2
 
-            // restart with the win restart
-            restart2(aliens)
+            setTimeout(function() {
 
-            // repopulate with new question
-            div_1 = dividendArray[counterDividend]
-            div_2 = numberSetToPopulate[counterNumPopulate]
+                // restart with the win restart
+                restart2(aliens)
+
+                // repopulate with new question
+                div_1 = dividendArray[counterDividend]
+                div_2 = numberSetToPopulate[counterNumPopulate]
+                updateNumQuestions()
+            }, 1000)
         }
         else if(userAnswer != answer && (attempted)){
+            incorrect_sound.play()
+
             console.log("The answer is wrong.")
             userAnswer = 0
             attempted = false
             restart2(aliens)
         }
-
-        updateNumQuestions()
 
         // game will be over when we finish all the dividends
         if(counterDividend == levels){
