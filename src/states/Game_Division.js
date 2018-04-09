@@ -62,6 +62,8 @@ export default class extends Phaser.State {
         //----------------------------------------------UI COMPONENT------------------------------------------
         //Display background in scene
         this.background = this.add.image(0, 0, 'Desert')
+        this.sign = this.add.image(this.world.centerX * 1.4, this.world.centerY * 1.3, 'sign')
+        this.sign.anchor.setTo(0.5, 0.5)
 
         //Creation of arrow button to exit state and return to game selection
         this.Back_Arrow = this.add.button(this.world.centerX * 0.1, this.world.centerY * 0.1, 'Arrow', actionGoBack, this)
@@ -120,7 +122,7 @@ export default class extends Phaser.State {
         console.log("This is dividend's length: " + levels)
         //console.log("This is numberSetToPopulate's length: " + numberSetToPopulate.length)
         
-        questionsLeft = this.add.text(game.world.centerX * 1.4,game.world.centerY*0.95, "", {fontSize:"40px", fill:"#000000"});
+        questionsLeft = this.add.text(game.world.centerX * 1.5,game.world.centerY*0.2, "", {fontSize:"40px", fill:"#000000"});
         questionsLeft.anchor.setTo(0.5, 0.5)
 
         //--------------------------------------------GAME NUMBERS DISPLAY---------------------------------------
@@ -133,11 +135,11 @@ export default class extends Phaser.State {
         // adding the targets
         createAliens();
 
-        firstOp = this.add.text(this.world.centerX * 1.3,this.world.centerY * 0.8, div_1, {fontSize:"100px", fill:"#000000"});
-        var mult_sign = this.add.text(this.world.centerX *1.4,this.world.centerY * 0.8, " \u00f7 ", {fontSize:"80px", fill:"#000000"});
-        secondOp = this.add.text(this.world.centerX *1.5,this.world.centerY * 0.8, div_2, {fontSize:"100px", fill:"#000000"});
-        var equals = this.add.text(this.world.centerX * 1.6,this.world.centerY * 0.8, " = ", {fontSize:"100px", fill:"#000000"});
-        answerOp = this.add.text(this.world.centerX *1.75,this.world.centerY * 0.8, userAnswer, {fontSize:"100px", fill:"#000000"});
+        firstOp = this.add.text(this.world.centerX * 1.3,this.world.centerY * 1.06, div_1, {fontSize:"100px", fill:"#ffffff"});
+        var mult_sign = this.add.text(this.world.centerX *1.4,this.world.centerY * 1.06, " \u00f7 ", {fontSize:"80px", fill:"#ffffff"});
+        secondOp = this.add.text(this.world.centerX *1.5,this.world.centerY * 1.06, div_2, {fontSize:"100px", fill:"#ffffff"});
+        var equals = this.add.text(this.world.centerX * 1.6,this.world.centerY * 1.06, " = ", {fontSize:"100px", fill:"#ffffff"});
+        answerOp = this.add.text(this.world.centerX *1.75,this.world.centerY * 1.06, userAnswer, {fontSize:"100px", fill:"#ffffff"});
 
         firstOp.anchor.setTo(0.5,0.5)
         mult_sign.anchor.setTo(0.5,0.5)
