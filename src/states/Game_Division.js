@@ -161,7 +161,7 @@ export default class extends Phaser.State {
              menu = game.add.sprite(w/2, h/2, 'menu');
              menu.anchor.setTo(0.5, 0.5);
              // And a label to illustrate which menu item was chosen. (This is not necessary)
-             choiseLabel = game.add.text(w/2, h-160, 'Click outside menu to continue', { font: '30px Arial', fill: '#fff' });
+             choiseLabel = game.add.text(w/2, h-160, 'Click outside menu to continue', { font: '30px Arial', fill: '#000000' });
              choiseLabel.anchor.setTo(0.5, 0.5);
          });
  
@@ -229,7 +229,8 @@ export default class extends Phaser.State {
 
          //--------------------------------------------Instruction Screen-----------------------------------------
         //load instruction screen
-        instructions = this.add.image(0, 0, 'instruct')
+        instructions = this.add.image(this.world.centerX, this.world.centerY, 'instruct')
+        instructions.anchor.setTo(0.5,0.5)
         this.input.onTap.addOnce(hide,self);
 
     }
@@ -618,7 +619,8 @@ function restartGame(){
 function restart () {
     //  A new level starts
     //  And brings the aliens back from the dead :)
-    stateText = game.add.sprite(0,0,'congrats');
+    stateText = game.add.sprite(725,500,'congrats');
+    stateText.anchor.setTo(0.5, 0.5)
     firstOp.visible = false
     secondOp.visible = false
     stateText.visible = true;
