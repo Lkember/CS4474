@@ -39,11 +39,12 @@ export default class extends Phaser.State {
         Background.height = this.world.height
 
         //Display instruction to select game (NEEDS STYLING**)
-        var text = this.add.text(this.world.centerX * 0.70,this.world.centerY/4,"Select A Game",
+        var text = this.add.text(this.world.centerX,this.world.centerY/4,"Select A Game",
             {font: "60px Arial",
                 fontWeight: "bold",
                 fill: "#FFD700",
                 boundsAlignH:"right"})
+        text.anchor.setTo(0.5,0.5)
 
         //Display game buttons representing FACTORING, MULTIPLICATION & DIVISION
         this.Factor_Button = this.add.button(this.world.centerX , this.world.centerY, 'ButtonFactor', actionOnClickFact, this)

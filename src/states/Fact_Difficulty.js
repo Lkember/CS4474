@@ -40,12 +40,13 @@ export default class extends Phaser.State {
         this.Back_Arrow.anchor.setTo(0.5, 0.5)
 
         //Text instruction for user to select a difficulty(NEEDS STYLING*)
-        var text = this.add.text(this.world.centerX * 0.65,this.world.centerY/4,"Select A Difficulty",
+        var text = this.add.text(this.world.centerX,this.world.centerY/4,"Select A Difficulty",
             {font: "60px Arial",
                 fontWeight: "bold",
                 fill: "#FFD700",
                 boundsAlignH:"right"})
-
+        text.anchor.setTo(0.5, 0.5)
+        
         //Display 3 buttons for difficulty selection (Latter 2 options grayed out at beggining)
         this.Diff_1_Button = this.add.button(this.world.centerX , this.world.centerY, 'unlock', actionOnClickFact, this)
         if(this.game.global.unlockFactor2 == true){

@@ -17,6 +17,8 @@ var factor_position_default = 265;
 var instructions;
 var questionsLeft;
 var queue = [];
+var level;
+var stateText;
 
 export default class extends Phaser.State {
 
@@ -36,6 +38,7 @@ export default class extends Phaser.State {
         this.load.image('congrats', '../../assets/images/congrats_fac.png')
         this.load.image('instruct', '../../assets/images/instructions_fac.png')
         this.load.spritesheet('Monkey', '../../assets/images/user-monkey-spritesheet.png',228 ,305, 4)
+        this.load.image('congrats', '../../assets/images/congrats_fac.png')
     }
 
     create() {
@@ -72,7 +75,7 @@ export default class extends Phaser.State {
         this.Back_Arrow.anchor.setTo(0.5, 0.5)
 
         //-----------------------------------------------GAME LOGIC----------------------------------------------
-        var level = getLevel(this.game.global.factLevel)
+        level = getLevel(this.game.global.factLevel)
 
         number_eq = level[this.rnd.integerInRange(0,level.length-1)]
         console.log("Number EQ: " + number_eq)
@@ -360,9 +363,23 @@ function banana_collide(){
             this.Banana.addChild(text2)
         }
     } 
-    else this.state.start('Fact_dif')
+    
+    else{
+    factor_position_default = 265; 
+    stateText = game.add.sprite(this.world.centerX,this.world.centerY,'congrats');
+    stateText.anchor.setTo(0.5, 0.5)
+    stateText.visible = true;
+    // reset the game board again
+    console.log("game is complete...")
+    game.input.onTap.addOnce(restart,this);
+    }
 }
 
+//Move one question forward
+function restart(){
+    console.log("restarting game...")
+    stateText.visible = false;
+}
 
 //Function to reset banana position once it leaves world boundary
 function banana_out(){
@@ -401,7 +418,12 @@ function banana_out(){
     }
     else {
         factor_position_default = 265;
-        this.state.start('Fact_dif')
+        stateText = game.add.sprite(this.world.centerX,this.world.centerY,'congrats');
+        stateText.anchor.setTo(0.5, 0.5)
+        stateText.visible = true;
+        // reset the game board again
+        console.log("game is complete...")
+        game.input.onTap.addOnce(restart,this);
     }
 }
 
