@@ -132,6 +132,7 @@ export default class extends Phaser.State {
         
         questionsLeft = this.add.text(game.world.centerX * 1.6,game.world.centerY*0.2, "", {fontSize:"40px", fill:"#000000"});
         questionsLeft.anchor.setTo(0.5, 0.5)
+        updateNumQuestions()
 
         //--------------------------------------------GAME NUMBERS DISPLAY---------------------------------------
         //Display equation onscreen
