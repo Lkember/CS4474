@@ -143,11 +143,11 @@ export default class extends Phaser.State {
         // adding the targets
         createAliens();
 
-        firstOp = this.add.text(this.world.centerX * 1.3,this.world.centerY * 1.06, div_1, {fontSize:"100px", fill:"#ffffff"});
-        var mult_sign = this.add.text(this.world.centerX *1.4,this.world.centerY * 1.06, " \u00f7 ", {fontSize:"80px", fill:"#ffffff"});
-        secondOp = this.add.text(this.world.centerX *1.5,this.world.centerY * 1.06, div_2, {fontSize:"100px", fill:"#ffffff"});
-        var equals = this.add.text(this.world.centerX * 1.6,this.world.centerY * 1.06, " = ", {fontSize:"100px", fill:"#ffffff"});
-        answerOp = this.add.text(this.world.centerX *1.75,this.world.centerY * 1.06, userAnswer, {fontSize:"100px", fill:"#ffffff"});
+        firstOp = this.add.text(this.world.centerX * 1.2,this.world.centerY * 1.06, div_1, {fontSize:"80px", fill:"#ffffff"});
+        var mult_sign = this.add.text(this.world.centerX *1.3,this.world.centerY * 1.06, " \u00f7 ", {fontSize:"80px", fill:"#ffffff"});
+        secondOp = this.add.text(this.world.centerX *1.4,this.world.centerY * 1.06, div_2, {fontSize:"80px", fill:"#ffffff"});
+        var equals = this.add.text(this.world.centerX * 1.5,this.world.centerY * 1.06, " = ", {fontSize:"80px", fill:"#ffffff"});
+        answerOp = this.add.text(this.world.centerX *1.6,this.world.centerY * 1.06, userAnswer, {fontSize:"80px", fill:"#ffffff"});
 
         firstOp.anchor.setTo(0.5,0.5)
         mult_sign.anchor.setTo(0.5,0.5)
@@ -276,7 +276,7 @@ export default class extends Phaser.State {
             setTimeout(function() {
                 // reset the answer portion
                 userAnswer = 0
-                
+
                 // restart with the win restart
                 restart2(aliens)
 

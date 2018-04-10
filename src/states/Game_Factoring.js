@@ -19,6 +19,8 @@ var questionsLeft;
 var queue = [];
 var level;
 var stateText;
+var correct_sound;
+var incorrect_sound;
 
 export default class extends Phaser.State {
 
@@ -29,6 +31,8 @@ export default class extends Phaser.State {
     //Load scene assets to display
     preload() {
         this.load.audio('cancel',['../../assets/fx/cancel1.wav', '../../assets/fx/cancel1.ogg'])
+        this.load.audio('correct',['../../assets/fx/correct1.mp3', '../../assets/fx/correct1.ogg'])
+        this.load.audio('incorrect',['../../assets/fx/incorrect1.mp3', '../../assets/fx/incorrect1.ogg'])
         this.load.image('Jungle', '../../assets/images/background_jungle.jpg')
         this.load.image('Banana', '../../assets/images/banana_small.png')
         this.load.image('ProfMonkey', '../../assets/images/prof-monkey.png')
@@ -44,6 +48,8 @@ export default class extends Phaser.State {
     create() {
 
         cancel_sound = this.game.add.audio('cancel')
+        correct_sound = this.game.add.audio('correct')
+        incorrect_sound = this.game.add.audio('incorrect')
 
         //----------------------------------------------UI COMPONENT---------------------------------------------
         //Display background in scene
@@ -62,7 +68,7 @@ export default class extends Phaser.State {
         this.UserMonkey.animations.add('walk')
         this.UserMonkey.animations.play('walk', 5, true)
 
- 
+
         //Enable body property and ARCADE physics on monkey sprite
         this.UserMonkey.enableBody = true
         this.physics.enable(this.UserMonkey, Phaser.Physics.ARCADE)
@@ -104,7 +110,7 @@ export default class extends Phaser.State {
         queue = shuffle(queue)
         this.add.text(177, 325, String(number_eq),{font:"30px Arial",fontWeight: "bold", fill:"#000000"})
 
-        questionsLeft = this.add.text(260, this.world.centerY * 0.9, "10 questions left", {fontSize:"40px", fill:"#FFFFFF"});
+        questionsLeft = this.add.text(260, this.world.centerY * 0.95, "10 questions left", {fontSize:"40px", fill:"#FFFFFF"});
         questionsLeft.anchor.setTo(0.5, 0.5)
 
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
@@ -327,6 +333,7 @@ function actionGoBack () {
 function banana_collide(){ 
     if(queue.length > 0){
         if(number_eq % Queue_Num == 0){
+            correct_sound.play()
             console.log("That answer is correct!")
             var board_text = game.add.text(factor_position_default,325,String(Queue_Num) + ",",
             {font: "20px Arial",
@@ -349,6 +356,7 @@ function banana_collide(){
             this.Banana.addChild(text2)
         }
         else{
+            incorrect_sound.play()
             console.log("You picked the wrong answer!")
             Queue_Num = queue.pop()
             console.log(Queue_Num)
