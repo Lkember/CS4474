@@ -110,8 +110,8 @@ export default class extends Phaser.State {
         queue = shuffle(queue)
         this.add.text(177, 325, String(number_eq),{font:"30px Arial",fontWeight: "bold", fill:"#000000"})
 
-        questionsLeft = this.add.text(260, this.world.centerY * 0.95, "10 questions left", {fontSize:"40px", fill:"#FFFFFF"});
-        questionsLeft.anchor.setTo(0.5, 0.5)
+        //questionsLeft = this.add.text(260, this.world.centerY * 0.9, "10 questions left", {fontSize:"40px", fill:"#FFFFFF"});
+        //questionsLeft.anchor.setTo(0.5, 0.5)
 
         //---------------------------------------------BANANA COMPONENTS-----------------------------------------
         //Spawn Banana at top boundary of world at random x co-ordinate within provided range
@@ -282,7 +282,7 @@ export default class extends Phaser.State {
         //Check collision with UserMonkey and Banana
         this.physics.arcade.collide(this.UserMonkey, this.Banana, collisionHandler, null, this);
 
-        updateRemaining()
+        //updateRemaining()
     }
 }
 
